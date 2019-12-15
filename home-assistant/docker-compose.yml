@@ -1,0 +1,44 @@
+version: '3'
+services:
+  homeassistant:
+    container_name: home-assistant
+    image: homeassistant/home-assistant:stable
+    volumes:
+      - ${HOME}/Switch433Control/home-assistant/config:/config
+    environment:
+      - TZ=Europe/Paris
+    ports:
+      - "8123:8123"
+    restart: always
+    depends_on: 
+      - mqtt
+      - nginx
+  mqtt:
+    container_name: MQTT
+    restart: unless-stopped
+    image: eclipse-mosquitto:1.6
+    ports:
+      - "1883:1883"
+      - "9001:9001"   
+    environment:
+      - TZ=Europe/Paris
+  nginx:
+    container_name: nginx
+    image: nginx:1.15-alpine
+    restart: unless-stopped
+    volumes:
+      - ${HOME}/Switch433Control/home-assistant/nginx-certbot/data/nginx:/etc/nginx/conf.d
+      - ${HOME}/Switch433Control/home-assistant/nginx-certbot/data/certbot/conf:/etc/letsencrypt
+      - ${HOME}/Switch433Control/home-assistant/nginx-certbot/data/certbot/www:/var/www/certbot
+    ports:
+      - "8080:80"
+      - "8443:443"
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+  certbot:
+    container_name: certbot
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ${HOME}/Switch433Control/home-assistant/nginx-certbot/data/certbot/conf:/etc/letsencrypt
+      - ${HOME}/Switch433Control/home-assistant/nginx-certbot/data/certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"

@@ -4,3 +4,10 @@
 .vscode/launch.json
 .vscode/ipch
 settings.h
+*.pem
+**/data/certbot/
+SERVICE_ACCOUNT.JSON
+home-assistant/config/secrets.yaml
+home-assistant/config/home-assistant*
+home-assistant/config/.HA_VERSION
+home-assistant/config/.storage

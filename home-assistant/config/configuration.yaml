@@ -1,0 +1,126 @@
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+# Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+http:
+  base_url: https://demikl.hopto.org
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.21.0.2
+
+homeassistant:
+  customize_domain:
+    switch:
+      hidden: true
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+
+mqtt:
+    broker: 192.168.1.252
+
+switch:
+  - platform: mqtt
+    name: sw1
+    command_topic: "cmnd/switch1/power"
+    state_topic: "stat/switch1/POWER"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    retain: true
+
+  - platform: mqtt
+    name: sw2
+    command_topic: "cmnd/switch2/power"
+    state_topic: "stat/switch2/POWER"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    retain: true
+
+  - platform: mqtt
+    name: sw3
+    command_topic: "cmnd/switch3/power"
+    state_topic: "stat/switch3/POWER"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    retain: true
+
+  - platform: mqtt
+    name: sw4
+    command_topic: "cmnd/switch4/power"
+    state_topic: "stat/switch4/POWER"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    retain: true
+
+  - platform: mqtt
+    name: sw5
+    command_topic: "cmnd/switch5/power"
+    state_topic: "stat/switch5/POWER"
+    qos: 1
+    payload_on: "ON"
+    payload_off: "OFF"
+    retain: true
+
+light:
+  - platform: switch
+    name: guirlandes baies vitrées
+    entity_id: switch.sw1
+  - platform: switch
+    name: sapin
+    entity_id: switch.sw2
+  - platform: switch
+    name: guirlande a boules
+    entity_id: switch.sw3
+  - platform: switch
+    name: guirlande buffet
+    entity_id: switch.sw4
+  - platform: switch
+    name: village de Noël
+    entity_id: switch.sw5
+
+google_assistant:
+  project_id: domotic-146011
+  #api_key: blablabla
+  service_account: !include SERVICE_ACCOUNT.JSON
+  report_state: true
+  expose_by_default: true
+  exposed_domains:
+    - light
+    - groups
+  entity_config:
+    group.les_guirlandes_de_noel:
+      name: les guirlandes de Noël
+      aliases:
+        - les guirlandes
+      room: salon
+    light.sapin:
+      name: le sapin
+    light.guirlandes_baies_vitrees:
+      name: les guirlandes des baies vitrées
+      aliases:
+        - les guirlandes de la baie vitrée
+        - la guirlandes des baies vitrées
+        - la guirlande de la baie vitrée
+    light.guirlande_a_boules:
+      name: la guirlande à boules
+      aliases:
+        - la guirlande du plafond
+    light.guirlande_buffet:
+      name: la guirlande du buffet
+      aliases:
+        - la guirlande étoiles
+    light.village_de_noel:
+      name: le village de Noël
+      aliases:
+        - le village du Père-Noël
