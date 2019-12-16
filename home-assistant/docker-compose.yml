@@ -33,7 +33,13 @@ services:
     ports:
       - "8080:80"
       - "8443:443"
+      - "81:81"
     command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+    labels:
+      com.datadoghq.ad.check_names: '["nginx"]'
+      com.datadoghq.ad.init_configs: '[{},{}]'
+      com.datadoghq.ad.instances: '[[{"nginx_status_url": "http://%%host%%:81/nginx_status/"}]]'
+      com.datadoghq.ad.logs: '[{"source": "nginx", "service": "nginx"}]'
   certbot:
     container_name: certbot
     image: certbot/certbot
