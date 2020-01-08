@@ -2,7 +2,7 @@ version: '3'
 services:
   homeassistant:
     container_name: home-assistant
-    image: homeassistant/home-assistant:stable
+    image: homeassistant/home-assistant:0.103.6
     volumes:
       - ${HOME}/Switch433Control/home-assistant/config:/config
     environment:
@@ -17,6 +17,7 @@ services:
     container_name: MQTT
     restart: unless-stopped
     image: eclipse-mosquitto:1.6
+    command: ["/usr/sbin/mosquitto", "-c", "/mosquitto/config/mosquitto.conf", "-v"]
     ports:
       - "1883:1883"
       - "9001:9001"   

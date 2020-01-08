@@ -124,3 +124,16 @@ google_assistant:
       name: le village de Noël
       aliases:
         - le village du Père-Noël
+
+device_tracker:
+  - platform: ping
+    hosts:
+      TV_salon: 192.168.31.56
+      Tablette_Raphaël old: 192.168.31.72
+      Tablette_Océane: 192.168.31.193
+      Honor_8X: 192.168.31.126
+      Wii: 192.168.31.141
+      WiFi_AP: 192.168.1.45
+
+upnp:
+  sensors: true
