@@ -74,20 +74,11 @@ switch:
 
 light:
   - platform: switch
-    name: guirlandes baies vitrées
+    name: arbre violet
     entity_id: switch.sw1
   - platform: switch
-    name: sapin
+    name: derrière télé
     entity_id: switch.sw2
-  - platform: switch
-    name: guirlande a boules
-    entity_id: switch.sw3
-  - platform: switch
-    name: guirlande buffet
-    entity_id: switch.sw4
-  - platform: switch
-    name: village de Noël
-    entity_id: switch.sw5
 
 google_assistant:
   project_id: domotic-146011
@@ -99,31 +90,12 @@ google_assistant:
     - light
     - groups
   entity_config:
-    group.les_guirlandes_de_noel:
-      name: les guirlandes de Noël
+    light.arbre_violet:
+      name: l'arbre violet
+    light.derriere_tele:
+      name: la lampe de la télé
       aliases:
-        - les guirlandes
-      room: salon
-    light.sapin:
-      name: le sapin
-    light.guirlandes_baies_vitrees:
-      name: les guirlandes des baies vitrées
-      aliases:
-        - les guirlandes de la baie vitrée
-        - la guirlandes des baies vitrées
-        - la guirlande de la baie vitrée
-    light.guirlande_a_boules:
-      name: la guirlande à boules
-      aliases:
-        - la guirlande du plafond
-    light.guirlande_buffet:
-      name: la guirlande du buffet
-      aliases:
-        - la guirlande étoiles
-    light.village_de_noel:
-      name: le village de Noël
-      aliases:
-        - le village du Père-Noël
+        - la lampe derrière la télé
 
 device_tracker:
   - platform: ping
