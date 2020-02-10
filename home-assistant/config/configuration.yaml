@@ -79,6 +79,9 @@ light:
   - platform: switch
     name: derrière télé
     entity_id: switch.sw2
+  - platform: switch
+    name: tipi Océane
+    entity_id: switch.sw3
 
 google_assistant:
   project_id: domotic-146011
@@ -96,6 +99,12 @@ google_assistant:
       name: la lampe de la télé
       aliases:
         - la lampe derrière la télé
+    light.tipi_oceane:
+      name: Tipi Océane
+      aliases:
+        - le tipi d'Océane
+        - la veilleuse d'Océane
+        - la veilleuse dans la chambre d'Océane
 
 device_tracker:
   - platform: ping
