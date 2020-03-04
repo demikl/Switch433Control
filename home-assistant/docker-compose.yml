@@ -2,7 +2,7 @@ version: '3'
 services:
   homeassistant:
     container_name: home-assistant
-    image: homeassistant/home-assistant:0.105.2
+    image: homeassistant/home-assistant:0.106.5
     volumes:
       - ${HOME}/Switch433Control/home-assistant/config:/config
     environment:
