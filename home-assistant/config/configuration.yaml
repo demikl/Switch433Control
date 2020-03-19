@@ -112,12 +112,13 @@ google_assistant:
 device_tracker:
   - platform: ping
     hosts:
-      TV_salon: 192.168.31.56
-      Tablette_Raphaël old: 192.168.31.72
-      Tablette_Océane: 192.168.31.193
-      Honor_8X: 192.168.31.126
-      Wii: 192.168.31.141
-      WiFi_AP: 192.168.1.45
+      tv_salon: 192.168.31.56
+      tablette_raphael_old: 192.168.31.72
+      tablette_oceane: 192.168.31.193
+      honor_8x: 192.168.31.126
+      wii: 192.168.31.141
+      wifi_ap: 192.168.1.45
 
 upnp:
   sensors: true
+
