@@ -4,6 +4,7 @@
 .vscode/launch.json
 .vscode/ipch
 settings.h
+config.json
 *.pem
 **/data/certbot/
 SERVICE_ACCOUNT.JSON
