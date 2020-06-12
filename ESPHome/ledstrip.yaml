@@ -1,0 +1,267 @@
+esphome:
+  name: ledstrip
+  platform: ESP8266
+  board: nodemcuv2
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  manual_ip:
+    static_ip: 192.168.1.65
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
+
+# Enable logging
+# Set logger to NOT default pins because we are using RX and TX for driving LEDs
+logger:
+  baud_rate: 0
+  hardware_uart: uart1
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+status_led:
+  pin:
+    number: D0
+    inverted: True
+
+light:
+  - platform: fastled_spi
+    chipset: P9813
+    data_pin: D6
+    clock_pin: D1
+    num_leds: 3
+    rgb_order: RGB
+    name: "FastLED SPI Light"
+   # gamma_correct: 1.8
+   # color_correct: [100%, 68%, 46%]
+    effects:
+      - addressable_rainbow:
+      - flicker:
+      - flicker:
+          name: Flicker more deviant
+          alpha: 60%
+      - flicker:
+          name: Flicker more intense and deviant
+          intensity: 20%
+          alpha: 60%
+      - random:
+      - addressable_twinkle:
+      - addressable_random_twinkle:
+      - addressable_fireworks:
+      - addressable_fireworks:
+          name: Fireworks Effect With Random Colors
+          use_random_color: true
+      - addressable_fireworks:
+          name: Very slow Fireworks Effect With Random Colors
+          use_random_color: true
+          spark_probability: 20%
+          fade_out_rate: 90
+      - addressable_flicker:
+      - addressable_flicker:
+          name: Addressable Flicker more intense
+          intensity: 60%
+      - addressable_color_wipe:
+      - addressable_color_wipe:
+          name: Color Wipe Effect With Custom Values
+          add_led_interval: 1s
+      - addressable_lambda:
+          name: "Fireplace simple"
+          update_interval: 30ms
+          lambda: |-
+            // it.size() - Number of LEDs
+            // it[num] - Access the LED at index num.
+            // Set the LED at num to the given r, g, b values
+            // it[num] = ESPColor(r, g, b);
+            // Get the color at index num (ESPColor instance)
+            // it[num].get();
+
+            it[0] = ESPHSVColor(30 + random_uint32() % 30, 255, 135 + random_uint32() % 120).to_rgb();
+            it[1] = ESPHSVColor(random_uint32() % 30, 255, 135 + random_uint32() % 120).to_rgb();
+            it[2] = ESPHSVColor(42, 255, 135 + random_uint32() % 120).to_rgb();
+
+  - platform: neopixelbus
+    variant: WS2812X
+    pin: RX
+    num_leds: 50
+    name: "WS2812b"
+
+# - platform: fastled_clockless
+#   chipset: WS2812B
+#   pin: D3
+#   num_leds: 50
+#   name: "WS2812b"
+
+    effects:
+      # Use default parameters:
+      - random:
+      # Customize parameters
+      - random:
+          name: "Slow Random Effect"
+          transition_length: 30s
+          update_interval: 30s
+      - random:
+          name: "Fast Random Effect"
+          transition_length: 4s
+          update_interval: 5s
+      - strobe:
+      - strobe:
+          name: Strobe Effect With Custom Values
+          colors:
+            - state: True
+              brightness: 100%
+              red: 100%
+              green: 90%
+              blue: 0%
+              duration: 500ms
+            - state: False
+              duration: 250ms
+            - state: True
+              brightness: 100%
+              red: 0%
+              green: 100%
+              blue: 0%
+              duration: 500ms
+      - flicker:
+      - flicker:
+          name: Flicker Effect With Custom Values
+          alpha: 95%
+          intensity: 1.5%
+      - addressable_rainbow:
+      - addressable_rainbow:
+          name: Rainbow Effect With Custom Values
+          speed: 10
+          width: 50
+      - addressable_color_wipe:
+      - addressable_color_wipe:
+          name: Color Wipe Effect With Custom Values
+          colors:
+            - red: 100%
+              green: 100%
+              blue: 100%
+              num_leds: 1
+            - red: 0%
+              green: 0%
+              blue: 0%
+              num_leds: 1
+          add_led_interval: 100ms
+          reverse: False
+      - addressable_scan:
+      - addressable_scan:
+          name: Scan Effect With Custom Values
+          move_interval: 100ms
+      - addressable_twinkle:
+      - addressable_twinkle:
+          name: Twinkle Effect With Custom Values
+          twinkle_probability: 5%
+          progress_interval: 4ms
+      - addressable_random_twinkle:
+      - addressable_random_twinkle:
+          name: Random Twinkle Effect With Custom Values
+          twinkle_probability: 5%
+          progress_interval: 32ms
+      - addressable_fireworks:
+      - addressable_fireworks:
+          name: Fireworks Effect With Custom Values
+          update_interval: 32ms
+          spark_probability: 10%
+          use_random_color: false
+          fade_out_rate: 120
+      - addressable_flicker:
+      - addressable_flicker:
+          name: Addressable Flicker Effect With Custom Values
+          update_interval: 16ms
+          intensity: 5%
+      - addressable_lambda:
+          name: "Fire"
+          update_interval: 15ms
+          lambda: |-
+            int Cooling = 55;
+            int Sparking = 110;
+            static byte heat[24];
+            int cooldown;
+            
+            // Step 1.  Cool down every cell a little
+            for( int i = 0; i < it.size(); i++) {
+              cooldown = random(0, ((Cooling * 10) / it.size()) + 2);
+              
+              if(cooldown>heat[i]) {
+                heat[i]=0;
+              } else {
+                heat[i]=heat[i]-cooldown;
+              }
+            }
+            
+            // Step 2.  Heat from each cell drifts 'up' and diffuses a little
+            for( int k= it.size() - 1; k >= 2; k--) {
+              heat[k] = (heat[k - 1] + heat[k - 2] + heat[k - 2]) / 3;
+            }
+            
+            // Step 3.  Randomly ignite new 'sparks' near the bottom
+            if( random(255) < Sparking ) {
+              int y = random(7);
+              heat[y] = heat[y] + random(160,255);
+            }
+            
+            // Step 4.  Convert heat to LED colors
+            for( int Pixel = 0; Pixel < it.size(); Pixel++) {
+              // Scale 'heat' down from 0-255 to 0-191
+              byte t192 = round((heat[Pixel]/255.0)*191);
+             
+              // calculate ramp up from
+              byte heatramp = t192 & 0x3F; // 0..63
+              heatramp <<= 2; // scale up to 0..252
+             
+              // figure out which third of the spectrum we're in:
+              //this is where you can reverse the effect by switching the commented out lines in all 3 places.
+              if( t192 > 0x80) {                     // hottest
+                //it[it.size() - Pixel - 1] = ESPColor(255, 255, heatramp);
+                it[Pixel] = ESPColor(255, 255, heatramp);
+              } else if( t192 > 0x40 ) {             // middle
+                //it[it.size() - Pixel - 1] = ESPColor(255, heatramp, 0);
+                it[Pixel] = ESPColor(255, heatramp, 0);
+              } else {                               // coolest
+                //it[it.size() - Pixel - 1] = ESPColor(heatramp, 0, 0);
+                it[Pixel] = ESPColor(heatramp, 0, 0);
+              }
+            }
+
+      - addressable_lambda:
+          name: "Twinkle overlay"
+          update_interval: 15ms
+          lambda: |-
+            // it.size() - Number of LEDs
+            // it[num] - Access the LED at index num.
+            // Set the LED at num to the given r, g, b values
+            // it[num] = ESPColor(r, g, b);
+            // Get the color at index num (ESPColor instance)
+            // it[num].get();
+
+            static float twinkle_probability = 0.18;
+
+            auto call = this->state_.turn_on();
+            call.set_brightness_if_supported(1.0f);
+
+            while (random_float() < twinkle_probability) {
+              const size_t pos = random_uint32() % it.size();
+              if (it[pos].get_effect_data() != 0)
+                continue;
+              it[pos].set_effect_data(1);
+            }
+
+            for (auto led : it) {
+              if (led.get_effect_data() != 0) {
+                const uint8_t sine = half_sin8(led.get_effect_data());
+                led = current_color + ESPColor::WHITE * sine;
+                const uint8_t new_pos = led.get_effect_data() + random_uint32() % 30;
+                if (new_pos < led.get_effect_data())
+                  led.set_effect_data(0);
+                else
+                  led.set_effect_data(new_pos);
+              } else {
+                led = current_color;
+              }
+            }
