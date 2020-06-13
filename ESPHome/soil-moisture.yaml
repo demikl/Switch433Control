@@ -91,7 +91,7 @@ mqtt:
 
 deep_sleep:
   id: deep_sleep_1
-  run_duration: 10s
+  run_duration: 120s
   sleep_duration: 15min
 
 ota:
@@ -147,6 +147,81 @@ sensor:
           window_size: ${adc_samples}
           send_every: ${adc_samples}
           send_first_at: ${adc_samples}
+      # ne pas envoyer a home-assistant les courts-circuits (sur GND ou sur VCC)
+      - filter_out: 0
+      - filter_out: 3.9
+    accuracy_decimals: 4
+    # créer un point dans home assistant meme si la valeur n'a pas changée
+    force_update: true
+
+  - platform: adc
+    pin: GPIO32
+    attenuation: 11db
+    name: "${upper_devicename} Moisture #1 +10s"
+    id: ${devicename}_moisture_1_10s
+    icon: "mdi:water-percent"
+
+    # la MAJ de ce composant est faite via un script "interval"
+    # pour permettre de remplir rapidement le filtre de moyennage
+    update_interval: never
+
+    filters:
+      # l'ADC de l'ESP32 ayant pas mal de bruit, on réalise de multiples mesures qui sont ensuite moyennées
+      - sliding_window_moving_average:
+          window_size: ${adc_samples}
+          send_every: ${adc_samples}
+          send_first_at: ${adc_samples}
+      # ne pas envoyer a home-assistant les courts-circuits (sur GND ou sur VCC)
+      - filter_out: 0
+      - filter_out: 3.9
+    accuracy_decimals: 4
+    # créer un point dans home assistant meme si la valeur n'a pas changée
+    force_update: true
+
+  - platform: adc
+    pin: GPIO32
+    attenuation: 11db
+    name: "${upper_devicename} Moisture #1 +30s"
+    id: ${devicename}_moisture_1_30s
+    icon: "mdi:water-percent"
+
+    # la MAJ de ce composant est faite via un script "interval"
+    # pour permettre de remplir rapidement le filtre de moyennage
+    update_interval: never
+
+    filters:
+      # l'ADC de l'ESP32 ayant pas mal de bruit, on réalise de multiples mesures qui sont ensuite moyennées
+      - sliding_window_moving_average:
+          window_size: ${adc_samples}
+          send_every: ${adc_samples}
+          send_first_at: ${adc_samples}
+      # ne pas envoyer a home-assistant les courts-circuits (sur GND ou sur VCC)
+      - filter_out: 0
+      - filter_out: 3.9
+    accuracy_decimals: 4
+    # créer un point dans home assistant meme si la valeur n'a pas changée
+    force_update: true
+
+  - platform: adc
+    pin: GPIO32
+    attenuation: 11db
+    name: "${upper_devicename} Moisture #1 +60s"
+    id: ${devicename}_moisture_1_60s
+    icon: "mdi:water-percent"
+
+    # la MAJ de ce composant est faite via un script "interval"
+    # pour permettre de remplir rapidement le filtre de moyennage
+    update_interval: never
+
+    filters:
+      # l'ADC de l'ESP32 ayant pas mal de bruit, on réalise de multiples mesures qui sont ensuite moyennées
+      - sliding_window_moving_average:
+          window_size: ${adc_samples}
+          send_every: ${adc_samples}
+          send_first_at: ${adc_samples}
+      # ne pas envoyer a home-assistant les courts-circuits (sur GND ou sur VCC)
+      - filter_out: 0
+      - filter_out: 3.9
     accuracy_decimals: 4
     # créer un point dans home assistant meme si la valeur n'a pas changée
     force_update: true
@@ -175,4 +250,44 @@ interval:
             - component.update: ${devicename}_moisture_1
             - lambda: |-
                 id(adc_samples_counter)++;
+
+      - delay: 10s
+      - globals.set:
+          id: adc_samples_counter
+          value: '0'
+      - while:
+          condition:
+            lambda: |-
+              return id(adc_samples_counter) < ${adc_samples};
+          then:
+            - component.update: ${devicename}_moisture_1_10s
+            - lambda: |-
+                id(adc_samples_counter)++;
+
+      - delay: 20s
+      - globals.set:
+          id: adc_samples_counter
+          value: '0'
+      - while:
+          condition:
+            lambda: |-
+              return id(adc_samples_counter) < ${adc_samples};
+          then:
+            - component.update: ${devicename}_moisture_1_30s
+            - lambda: |-
+                id(adc_samples_counter)++;
+
+      - delay: 30s
+      - globals.set:
+          id: adc_samples_counter
+          value: '0'
+      - while:
+          condition:
+            lambda: |-
+              return id(adc_samples_counter) < ${adc_samples};
+          then:
+            - component.update: ${devicename}_moisture_1_60s
+            - lambda: |-
+                id(adc_samples_counter)++;
+
       - output.turn_off: vcc_moisture_1
