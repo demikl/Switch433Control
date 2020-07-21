@@ -152,7 +152,7 @@ sensor:
           send_first_at: ${adc_samples}
       # conversion linéaire en % d'humidité
       #- calibrate_linear:
-      #  - #2.2 -> 0.0
+      #  - #1.0 -> 0.0
       #  - 3.00 -> 100.0
     accuracy_decimals: 4
     # créer un point dans home assistant meme si la valeur n'a pas changée
