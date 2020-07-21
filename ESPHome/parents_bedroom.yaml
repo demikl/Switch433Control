@@ -1,0 +1,341 @@
+---
+substitutions:
+  devicename: parents_bedroom
+  upper_devicename: Chambre des parents
+
+esphome:
+  name: ${devicename}
+  platform: ESP8266
+  board: nodemcuv2
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  fast_connect: true
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+#  ap:
+#    ssid: ${upper_devicename} Hotspot
+#    password: "mBVIy9awG8vE"
+#
+  manual_ip:
+    # pour une connection rapide, et pour que le conteneur docker esphome puisse trouver l'ESP sans mDNS
+    static_ip: 192.168.1.60
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
+
+# si pas de connexion WiFi, créer un hotspot wifi
+# captive_portal:
+
+# Enable logging
+logger:
+  level: DEBUG  ## DEBUG obligatoire pour dumper les codes infrarouges recus
+
+# Disable Home Assistant API and use MQTT instead, because we're using deep sleep
+api:
+
+ota:
+  password: !secret ota_password
+
+status_led:
+  pin:
+    number: D0
+    inverted: true
+
+i2c:
+  sda: D2
+  scl: D1
+
+sensor:
+  - platform: bme280
+    temperature:
+      name: "${upper_devicename} température"
+    pressure:
+      name: "${upper_devicename} baromètre"
+    humidity:
+      name: "${upper_devicename} humidité"
+    update_interval: 60s
+    address: 0x76
+
+output:
+  - platform: esp8266_pwm
+    id: red
+    pin: D7
+  - platform: esp8266_pwm
+    id: blue
+    pin: D5
+  - platform: esp8266_pwm
+    id: green
+    pin: D6
+
+light:
+  - platform: rgb
+    red: red
+    blue: blue
+    green: green
+    restore_mode: ALWAYS_OFF
+    name: "${upper_devicename} Eclairage tête de lit"
+    id: bed_head_ledstrip
+    effects:
+      - random
+      - flicker
+
+binary_sensor:
+#  - platform: gpio
+#    pin:
+#      number: D8
+#      #mode: INPUT_PULLDOWN  # default for D8
+#      # inverted: True
+#    name: "${upper_devicename} bouton côté Soso"
+#    filters:
+#      # debounce
+#      - delayed_on: 10ms
+#    on_press:
+#      then:
+#        - light.toggle: bed_head_ledstrip
+#
+  - platform: gpio
+    pin:
+      number: D4
+      mode: INPUT_PULLUP
+      inverted: True
+    name: "${upper_devicename} bouton côté Mick"
+    filters:
+      # debounce
+      - delayed_on: 10ms
+    on_press:
+      then:
+        - light.toggle: bed_head_ledstrip
+
+####
+
+# recepteur infrarouge
+# inspirations :
+#  - https://community.home-assistant.io/t/magichome-with-ir-working-using-esphome/182555
+#  - http://woodsgood.ca/projects/2015/02/13/rgb-led-strip-controllers-ir-codes/
+#  - https://github.com/esphome/issues/issues/742#issuecomment-640077615
+
+  - platform: remote_receiver
+    id: ir_power
+    lg:
+      data: 0x00FF02FD
+      nbits: 32
+    on_press:
+      then:
+        - light.toggle:
+            id: bed_head_ledstrip
+            transition_length: 5s
+  - platform: remote_receiver
+    id: ir_brightness_up
+    lg:
+      data: 0x00FF3AC5
+      nbits: 32
+    on_press:
+      then:
+        - light.dim_relative:
+            id: bed_head_ledstrip
+            transition_length: 500ms
+            relative_brightness: 5%
+  - platform: remote_receiver
+    id: ir_brightness_down
+    lg:
+      data: 0x00FFBA45
+      nbits: 32
+    on_press:
+      then:
+        - light.dim_relative:
+            id: bed_head_ledstrip
+            transition_length: 500ms
+            relative_brightness: -5%
+  - platform: remote_receiver
+    id: ir_red
+    lg:
+      data: 0x00FF1AE5
+      nbits: 32
+    on_press:
+      then:
+        - light.turn_on:
+            id: bed_head_ledstrip
+            red: 100%
+            green: 0
+            blue: 0
+            effect: None
+  - platform: remote_receiver
+    id: ir_green
+    lg:
+      data: 0x00FF9A65
+      nbits: 32
+    on_press:
+      then:
+        - light.turn_on:
+            id: bed_head_ledstrip
+            red: 0
+            green: 100%
+            blue: 0
+            effect: None
+  - platform: remote_receiver
+    id: ir_blue
+    lg:
+      data: 0x00FFA25D
+      nbits: 32
+    on_press:
+      then:
+        - light.turn_on:
+            id: bed_head_ledstrip
+            red: 0
+            green: 0
+            blue: 100%
+            effect: None
+  - platform: remote_receiver
+    id: ir_white
+    lg:
+      data: 0x00FF22DD
+      nbits: 32
+    on_press:
+      then:
+        - light.turn_on:
+            id: bed_head_ledstrip
+            red: 100%
+            green: 100%
+            blue: 100%
+            effect: None
+
+  - platform: remote_receiver
+    id: ir_red_up
+    lg:
+      data: 0x00FF28D7
+      nbits: 32
+    on_press:
+      then:
+        - light.turn_on:
+            id: bed_head_ledstrip
+            red: !lambda |-
+              float current = id(bed_head_ledstrip).remote_values.get_red();
+              return current + 0.1;
+  - platform: remote_receiver
+    id: ir_red_down
+    lg:
+      data: 0x00FF08F7
+      nbits: 32
+    on_press:
+      then:
+        - light.turn_on:
+            id: bed_head_ledstrip
+            red: !lambda |-
+              float current = id(bed_head_ledstrip).remote_values.get_red();
+              return clamp(current - 0.1, 0.0f, 1.0f);
+  - platform: remote_receiver
+    id: ir_green_up
+    lg:
+      data: 0x00FFA857
+      nbits: 32
+    on_press:
+      then:
+        - light.turn_on:
+            id: bed_head_ledstrip
+            green: !lambda |-
+              float current = id(bed_head_ledstrip).remote_values.get_green();
+              return clamp(current + 0.1, 0.0f, 1.0f);
+  - platform: remote_receiver
+    id: ir_green_down
+    lg:
+      data: 0x00FF8877
+      nbits: 32
+    on_press:
+      then:
+        - light.turn_on:
+            id: bed_head_ledstrip
+            green: !lambda |-
+              float current = id(bed_head_ledstrip).remote_values.get_green();
+              return clamp(current - 0.1, 0.0f, 1.0f);
+  - platform: remote_receiver
+    id: ir_blue_up
+    lg:
+      data: 0x00FF6897
+      nbits: 32
+    on_press:
+      then:
+        - light.turn_on:
+            id: bed_head_ledstrip
+            blue: !lambda |-
+              float current = id(bed_head_ledstrip).remote_values.get_blue();
+              return clamp(current + 0.1, 0.0f, 1.0f);
+  - platform: remote_receiver
+    id: ir_blue_down
+    lg:
+      data: 0x00FF48B7
+      nbits: 32
+    on_press:
+      then:
+        - light.turn_on:
+            id: bed_head_ledstrip
+            blue: !lambda |-
+              float current = id(bed_head_ledstrip).remote_values.get_blue();
+              return clamp(current - 0.1, 0.0f, 1.0f);
+  - platform: remote_receiver
+    id: ir_auto
+    lg:
+      data: 0x00FFF00F
+      nbits: 32
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: |-
+                return id(bed_head_ledstrip).get_effect_name() == "Random";
+            then:
+              - light.turn_on:
+                  id: bed_head_ledstrip
+                  effect: None
+            else:
+              - light.turn_on:
+                  id: bed_head_ledstrip
+                  effect: Random
+  - platform: remote_receiver
+    id: ir_play
+    lg:
+      data: 0x00FF827D
+      nbits: 32
+    on_press:
+      then:
+        - if:
+            condition:
+              lambda: |-
+                return id(bed_head_ledstrip).get_effect_name() == "Flicker";
+            then:
+              - light.turn_on:
+                  id: bed_head_ledstrip
+                  effect: None
+            else:
+              - light.turn_on:
+                  id: bed_head_ledstrip
+                  effect: Flicker
+
+remote_receiver:
+  pin:
+    number: D3 # D5
+    mode: INPUT_PULLUP
+    inverted: True
+  dump: all
+  tolerance: 25%
+
+
+# button
+#   long-pressed: enter settings mode
+#     - first, luminosity preset ; visual feedback when entering this mode is to flicker luminosity
+#       when reaching lowest and highest luminosity, visual feedback
+#     - next, hue preset ; visual feedback when entering this mode is to flicker hue, with full saturation
+#     - next (?), saturation preset ; visual feedback when entering this mode is to flicker saturation, with chosen hue
+#     - finally, validation phase: alternate between before and after settings, and:
+#       - short press: validate and set light to new settings
+#       - long press: cancel and go back to old settings
+#     when in settings mode:
+#       - long press: cycle through values
+#       - short press: validate and go to next preset mode
+#   very long pressed:
+#     visual feedback multiples times as a warning while the button is pressed, allowing to cancel entering into very long pressed mode
+#     if button is still pressed after the warnings, save the current setting for the button that was used for the very long pressed
+#   short-pressed: on/off ; if turning on, set an auto-off timer with decreasing luminosity (turn_off with very long transition ?)
+#   double short-pressed:
+#     if not already at low luminosity, go to low luminosity
+#     else (at low luminosity) highest luminosity
