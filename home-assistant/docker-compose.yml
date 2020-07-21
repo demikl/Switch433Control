@@ -2,13 +2,12 @@ version: '3'
 services:
   homeassistant:
     container_name: home-assistant
-    image: homeassistant/home-assistant:0.107.1
+    image: homeassistant/home-assistant:0.112.4
     volumes:
       - ${HOME}/Switch433Control/home-assistant/config:/config
     environment:
       - TZ=Europe/Paris
-    ports:
-      - "8123:8123"
+    network_mode: host
     restart: always
     depends_on: 
       - mqtt
@@ -18,9 +17,8 @@ services:
     restart: unless-stopped
     image: eclipse-mosquitto:1.6
     command: ["/usr/sbin/mosquitto", "-c", "/mosquitto/config/mosquitto.conf", "-v"]
-    ports:
-      - "1883:1883"
-      - "9001:9001"   
+    network_mode: host
+    restart: always
     environment:
       - TZ=Europe/Paris
   nginx:
@@ -49,3 +47,21 @@ services:
       - ${HOME}/Switch433Control/home-assistant/nginx-certbot/data/certbot/conf:/etc/letsencrypt
       - ${HOME}/Switch433Control/home-assistant/nginx-certbot/data/certbot/www:/var/www/certbot
     entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+
+  homie:
+    container_name: homie-ota
+    image: ivdata/homie-ota
+    restart: always
+    volumes:
+      - ${HOME}/Switch433Control/home-assistant/homie-ota.ini:/app/homie-ota.ini
+    ports:
+    - "9080:9080"
+  esphome:
+      image: esphome/esphome:1.14.5
+      volumes:
+        - ${HOME}/Switch433Control/ESPHome/:/config:rw
+        # Use local time for logging timestamps
+        - /etc/localtime:/etc/localtime:ro
+      network_mode: host
+      restart: always
+  
