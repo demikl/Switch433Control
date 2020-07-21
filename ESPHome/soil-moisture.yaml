@@ -166,7 +166,7 @@ globals:
 
 interval:
   # le script de MAJ des senseurs ADC moyennés
-  - interval: 5min
+  - interval: 3min
     id: interval_refresh_adc
     then:
       - output.turn_on: vcc_moisture_1
