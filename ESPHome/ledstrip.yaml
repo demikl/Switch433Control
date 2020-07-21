@@ -50,6 +50,53 @@ sensor:
     name: "Ultrasonic Sensor"
     update_interval: 180s
 
+  - platform: ultrasonic
+    trigger_pin: D4
+    echo_pin: D5
+    id: distance_internal
+    internal: true
+    update_interval: never
+    filters:
+    - median:
+        window_size: 5
+        send_every: 1
+    on_value:
+      if:
+        condition:
+          and:
+          - sensor.in_range:
+              id: distance_internal
+              above: 0.05
+              below: 0.5
+          - switch.is_on: ledstrip_distance_controlled
+        then:
+          - light.turn_on:
+              id: ledstrip_bureau
+              transition_length: 0ms
+              brightness: !lambda |-
+                return x*2;
+
+interval:
+  # le script de MAJ du capteur de distance "temps réel"
+  - interval: 20ms
+    id: interval_refresh_distance_realtime
+    then:
+      if:
+        condition:
+          switch.is_on: ledstrip_distance_controlled
+        then:
+          - component.update: distance_internal
+
+switch:
+  - platform: template
+    name: "Use distance for brightness control"
+    id: ledstrip_distance_controlled
+    optimistic: true
+    turn_off_action:
+      - light.turn_on:
+          id: ledstrip_bureau
+          brightness: 100%
+
 light:
   - platform: fastled_spi
     chipset: P9813
@@ -58,6 +105,7 @@ light:
     num_leds: 3
     rgb_order: RGB
     name: "FastLED SPI Light"
+    id: ledstrip_bureau
    # gamma_correct: 1.8
    # color_correct: [100%, 68%, 46%]
     effects:
