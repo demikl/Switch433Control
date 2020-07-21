@@ -1,0 +1,11 @@
+- id: '1587313233798'
+  name: Fin de film le soir
+  entities:
+    light.arbre_violet:
+      friendly_name: arbre violet
+      state: 'on'
+      supported_features: 0
+    light.derriere_tele:
+      friendly_name: derrière télé
+      state: 'on'
+      supported_features: 0

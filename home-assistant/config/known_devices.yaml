@@ -1,0 +1,57 @@
+
+wifi_ap:
+  hide_if_away: false
+  icon:
+  mac:
+  name: wifi ap
+  picture:
+  track: true
+
+tablette_raphael_new:
+  icon:
+  mac:
+  name: tablette_raphael_new
+  picture:
+  track: true
+
+tablette_oceane:
+  icon:
+  mac:
+  name: tablette_oceane
+  picture:
+  track: true
+
+honor_8x:
+  icon:
+  mac:
+  name: honor_8x
+  picture:
+  track: true
+
+pc_portable_evtech:
+  icon:
+  mac:
+  name: pc_portable_evtech
+  picture:
+  track: true
+
+tv_salon:
+  icon:
+  mac:
+  name: tv_salon
+  picture:
+  track: true
+
+nintendo_switch:
+  icon:
+  mac:
+  name: nintendo_switch
+  picture:
+  track: true
+
+tablette_raphael_old:
+  icon:
+  mac:
+  name: tablette_raphael_old
+  picture:
+  track: true

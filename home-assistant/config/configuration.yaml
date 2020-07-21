@@ -10,14 +10,25 @@ http:
     - 172.21.0.2
 
 homeassistant:
-  customize_domain:
-    switch:
+  external_url: https://demikl.hopto.org
+  customize:
+    switch.sw1:
+      hidden: true
+    switch.sw2:
+      hidden: true
+    switch.sw3:
       hidden: true
 
 # Text to speech
 tts:
   - platform: google_translate
+    cache: true
+    cache_dir: /tmp/tts
+    time_memory: 300
+    base_url: https://demikl.hopto.org
+    service_name: google_say
 
+sensor: !include sensors.yaml
 group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml
@@ -25,55 +36,85 @@ scene: !include scenes.yaml
 
 mqtt:
     broker: 192.168.1.252
+    discovery: true
+
+influxdb:
+  host: 192.168.1.53
+  include:
+    entities:
+    - sensor.la_bruffiere_temperature
+    - sensor.rf_433_mhz_luminosite
+    - sensor.rf_433_mhz_temperature
+    - sensor.esphome_iot_gardening_1_moisture_1
+    - sensor.esphome_iot_gardening_1_moisture_1_10s
+    - sensor.esphome_iot_gardening_1_moisture_1_30s
+    - sensor.esphome_iot_gardening_1_moisture_1_60s
+    - sensor.bme280_temperature
+    - sensor.bme280_humidity
+    - sensor.bme280_pressure
 
 meteo_france:
   - city: '85530'
 
 switch:
+  - platform: flux
+    lights:
+    - light.fastled_spi_light
+    start_time: "7:00:00"
+    stop_time: "22:00:00"
+    start_colortemp: 4500
+    brightness: 255
+    interval: 900
+
   - platform: mqtt
     name: sw1
-    command_topic: "cmnd/switch1/power"
-    state_topic: "stat/switch1/POWER"
-    qos: 1
-    payload_on: "ON"
-    payload_off: "OFF"
-    retain: true
+    command_topic: "homie/rf-sockets-salon/switches_1/on/set"
+    state_topic: "homie/rf-sockets-salon/switches_1/on"
+    availability_topic: "homie/rf-sockets-salon/$state"
+    payload_on: "on"
+    payload_off: "off"
+    payload_available: "ready"
+    payload_not_available: "lost"
 
   - platform: mqtt
     name: sw2
-    command_topic: "cmnd/switch2/power"
-    state_topic: "stat/switch2/POWER"
-    qos: 1
-    payload_on: "ON"
-    payload_off: "OFF"
-    retain: true
+    command_topic: "homie/rf-sockets-salon/switches_2/on/set"
+    state_topic: "homie/rf-sockets-salon/switches_2/on"
+    availability_topic: "homie/rf-sockets-salon/$state"
+    payload_on: "on"
+    payload_off: "off"
+    payload_available: "ready"
+    payload_not_available: "lost"
 
   - platform: mqtt
     name: sw3
-    command_topic: "cmnd/switch3/power"
-    state_topic: "stat/switch3/POWER"
-    qos: 1
-    payload_on: "ON"
-    payload_off: "OFF"
-    retain: true
+    command_topic: "homie/rf-sockets-salon/switches_3/on/set"
+    state_topic: "homie/rf-sockets-salon/switches_3/on"
+    availability_topic: "homie/rf-sockets-salon/$state"
+    payload_on: "on"
+    payload_off: "off"
+    payload_available: "ready"
+    payload_not_available: "lost"
 
   - platform: mqtt
     name: sw4
-    command_topic: "cmnd/switch4/power"
-    state_topic: "stat/switch4/POWER"
-    qos: 1
-    payload_on: "ON"
-    payload_off: "OFF"
-    retain: true
+    command_topic: "homie/rf-sockets-salon/switches_4/on/set"
+    state_topic: "homie/rf-sockets-salon/switches_4/on"
+    availability_topic: "homie/rf-sockets-salon/$state"
+    payload_on: "on"
+    payload_off: "off"
+    payload_available: "ready"
+    payload_not_available: "lost"
 
   - platform: mqtt
     name: sw5
-    command_topic: "cmnd/switch5/power"
-    state_topic: "stat/switch5/POWER"
-    qos: 1
-    payload_on: "ON"
-    payload_off: "OFF"
-    retain: true
+    command_topic: "homie/rf-sockets-salon/switches_5/on/set"
+    state_topic: "homie/rf-sockets-salon/switches_5/on"
+    availability_topic: "homie/rf-sockets-salon/$state"
+    payload_on: "on"
+    payload_off: "off"
+    payload_available: "ready"
+    payload_not_available: "lost"
 
 light:
   - platform: switch
@@ -112,13 +153,15 @@ google_assistant:
 device_tracker:
   - platform: ping
     hosts:
-      tv_salon: 192.168.31.56
-      tablette_raphael_old: 192.168.31.72
-      tablette_oceane: 192.168.31.193
-      honor_8x: 192.168.31.126
-      wii: 192.168.31.141
+      pc_portable_evtech: 192.168.1.41
+      tv_salon: 192.168.1.31
+      tablette_raphael_old: 192.168.1.47
+      tablette_raphael_new: 192.168.1.30
+      tablette_oceane: 192.168.1.48
+      honor_8x: 192.168.1.23
+      nintendo_wii: 192.168.31.141
+      nintendo_switch: 192.168.1.49
       wifi_ap: 192.168.1.45
 
 upnp:
-  sensors: true
 

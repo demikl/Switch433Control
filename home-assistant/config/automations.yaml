@@ -1,1 +1,195 @@
-[]
+- id: '1587313139256'
+  alias: Allumer lumière quand TV éteinte en fin de soirée
+  description: ''
+  trigger:
+  - entity_id: media_player.samsung_ue55h6400
+    from: 'on'
+    platform: state
+    to: 'off'
+  condition:
+  - after: '22:00'
+    before: '5:00'
+    condition: time
+  action:
+  - scene: scene.fin_de_film_le_soir
+- id: '1587314026352'
+  alias: Allumer lumière tamisée quand plex devient inactif
+  description: ''
+  trigger:
+  - entity_id: media_player.plex_plex_for_samsung_tv_ue55h6400
+    from: playing
+    platform: state
+    to: idle
+  condition:
+  - after: '21:00'
+    before: '5:00'
+    condition: time
+  action:
+  - data: {}
+    entity_id: light.derriere_tele
+    service: light.turn_on
+- id: '1587314207425'
+  alias: Eteindre lumière quand plex passe en lecture
+  description: ''
+  trigger:
+  - entity_id: media_player.plex_plex_for_samsung_tv_ue55h6400
+    from: idle
+    platform: state
+    to: playing
+  condition:
+  - after: '20:00'
+    before: '5:00'
+    condition: time
+  - condition: time
+    weekday:
+    - mon
+    - tue
+    - thu
+    - fri
+    - sun
+  action:
+  - data: {}
+    entity_id: light.arbre_violet
+    service: light.turn_off
+  - data: {}
+    entity_id: light.derriere_tele
+    service: light.turn_off
+- id: '1587314310138'
+  alias: Arbre violet fin de journée
+  description: ''
+  trigger:
+  - below: '10'
+    entity_id: sun.sun
+    platform: numeric_state
+    value_template: '{{ state_attr(''sun.sun'', ''elevation'') }}'
+  - below: '60'
+    entity_id: sensor.la_bruffiere_next_rain
+    platform: numeric_state
+  condition:
+  - condition: device
+    device_id: cf90bd6ec1ef47a2aec0d78c3551befa
+    domain: device_tracker
+    entity_id: device_tracker.cph1893
+    type: is_home
+  - after: '16:00'
+    condition: time
+  action:
+  - data: {}
+    entity_id: light.arbre_violet
+    service: light.turn_on
+  - data: {}
+    entity_id: automation.arbre_violet_fin_de_journee
+    service: automation.turn_off
+- id: '1587316830884'
+  alias: réactiver automatisme arbre violet soir
+  description: ''
+  trigger:
+  - at: '15:00'
+    platform: time
+  condition:
+  - condition: state
+    entity_id: automation.arbre_violet_fin_de_journee
+    state: 'off'
+  action:
+  - data: {}
+    entity_id: automation.arbre_violet_fin_de_journee
+    service: automation.turn_on
+- id: '1588100220232'
+  alias: Alimenter LEDStrip quand allumé
+  description: ''
+  trigger:
+  - entity_id: light.fastled_spi_light
+    from: 'off'
+    platform: state
+    to: 'on'
+  condition: []
+  action:
+  - data: {}
+    entity_id: switch.sw5
+    service: switch.turn_on
+- id: '1588100331976'
+  alias: Couper alim LEDStrip quand éteint
+  description: ''
+  trigger:
+  - entity_id: light.fastled_spi_light
+    for: 0:00:10
+    from: 'on'
+    platform: state
+    to: 'off'
+  condition: []
+  action:
+  - data: {}
+    entity_id: switch.sw5
+    service: switch.turn_off
+- id: '1588100804526'
+  alias: Allumer bureau quand ordinateur actif
+  description: ''
+  trigger:
+  - entity_id: device_tracker.pc_portable_evtech
+    from: not_home
+    platform: state
+    to: home
+  condition:
+  - condition: device
+    device_id: 9a37f5bf1dfb4a269154141145453217
+    domain: light
+    entity_id: light.fastled_spi_light
+    type: is_off
+  - after: '7:00'
+    condition: time
+  action:
+  - data:
+      brightness: 255
+      transition: 20
+    entity_id: light.fastled_spi_light
+    service: light.turn_on
+- id: '1588100908266'
+  alias: Eteindre bureau quand ordinateur inactif
+  description: ''
+  trigger:
+  - entity_id: device_tracker.pc_portable_evtech
+    for: 0:01:00
+    from: home
+    platform: state
+    to: not_home
+  condition:
+  - condition: device
+    device_id: 9a37f5bf1dfb4a269154141145453217
+    domain: light
+    entity_id: light.fastled_spi_light
+    type: is_on
+  action:
+  - device_id: 9a37f5bf1dfb4a269154141145453217
+    domain: light
+    entity_id: light.fastled_spi_light
+    type: turn_off
+- id: '1590499873191'
+  alias: say "Au revoir la tablette de Raphaël" when tablette_raphael_new is away
+  description: ''
+  trigger:
+  - entity_id: device_tracker.tablette_raphael_new
+    from: home
+    platform: state
+    to: not_home
+  condition: []
+  action:
+  - data:
+      entity_id: media_player.nest_mini_gris
+      language: fr
+      message: Au revoir la tablette de Raphaël.
+    service: tts.google_say
+- id: '1590500752548'
+  alias: say "Au revoir la tablette de Océane" when tablette_oceane is away
+  description: ''
+  trigger:
+  - entity_id: device_tracker.tablette_oceane
+    from: home
+    platform: state
+    to: not_home
+  condition: []
+  action:
+  - data:
+      entity_id: media_player.nest_mini_gris
+      language: fr
+      message: Au revoir la tablette d''Océane.
+    service: tts.google_say

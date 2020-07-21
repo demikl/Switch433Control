@@ -1,0 +1,29 @@
+- platform: mqtt
+  unique_id: rf433_temp
+  device_class: temperature
+  state_topic: homie/rf-sockets-salon/temperature/degrees
+  name: "RF 433 MHz - Temperature"
+  unit_of_measurement: "°C"
+
+- platform: mqtt
+  unique_id: rf433_vcc
+  device_class: battery
+  state_topic: homie/rf-sockets-salon/powerSupply/powerSupply
+  name: "RF 433 MHz - alim"
+  unit_of_measurement: "mV"
+
+- platform: mqtt
+  unique_id: rf433_wifi
+  device_class: signal_strength
+  state_topic: homie/rf-sockets-salon/$stats/signal
+  name: "RF 433 MHz - Signal WiFi"
+  unit_of_measurement: "%"
+
+- platform: mqtt
+  device_class: illuminance
+  state_topic: homie/rf-sockets-salon/brightness/adc_1024
+  name: "RF 433 MHz - luminosité"
+  unit_of_measurement: "int10"
+
+
+
