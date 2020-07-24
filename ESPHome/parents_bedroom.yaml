@@ -68,6 +68,16 @@ output:
     id: green
     pin: D6
 
+globals:
+  - id: preset_soso
+    type: float[4]  # [luminosity, red, green, blue]
+    restore_value: true
+    initial_value: "{0.8, 0.7, 0, 1}"
+  - id: preset_mick
+    type: float[4]  # [luminosity, red, green, blue]
+    restore_value: true
+    initial_value: "{0.8, 0, 1, 0.4}"
+
 light:
   - platform: rgb
     red: red
@@ -80,20 +90,106 @@ light:
       - random
       - flicker
 
+script:
+  - id: ledstrip_warning_going_to_be_saved
+    then:
+      while:
+        condition:
+          lambda: "return true;"
+        then:
+          - light.turn_on:
+              id: bed_head_ledstrip
+              flash_length: 0.05s
+              brightness: 50%
+              red: 100%
+              green: 100%
+              blue: 100%
+          - delay: 0.5s
+
 binary_sensor:
-#  - platform: gpio
-#    pin:
-#      number: D8
-#      #mode: INPUT_PULLDOWN  # default for D8
-#      # inverted: True
-#    name: "${upper_devicename} bouton côté Soso"
-#    filters:
-#      # debounce
-#      - delayed_on: 10ms
-#    on_press:
-#      then:
-#        - light.toggle: bed_head_ledstrip
-#
+# button
+#   long-pressed: enter settings mode
+#     - first, luminosity preset ; visual feedback when entering this mode is to flicker luminosity
+#       when reaching lowest and highest luminosity, visual feedback
+#     - next, hue preset ; visual feedback when entering this mode is to flicker hue, with full saturation
+#     - next (?), saturation preset ; visual feedback when entering this mode is to flicker saturation, with chosen hue
+#     - finally, validation phase: alternate between before and after settings, and:
+#       - short press: validate and set light to new settings
+#       - long press: cancel and go back to old settings
+#     when in settings mode:
+#       - long press: cycle through values
+#       - short press: validate and go to next preset mode
+#   very long pressed:
+#     visual feedback multiples times as a warning while the button is pressed, allowing to cancel entering into very long pressed mode
+#     if button is still pressed after the warnings, save the current setting for the button that was used for the very long pressed
+#   short-pressed: on/off ; if turning on, set an auto-off timer with decreasing luminosity (turn_off with very long transition ?)
+#   double short-pressed:
+#     if not already at low luminosity, go to low luminosity
+#     else (at low luminosity) highest luminosity
+  - platform: gpio
+    pin:
+      number: D8
+      # mode: INPUT_PULLDOWN  # D8 is pulled to GND
+      # inverted: True
+    name: "${upper_devicename} bouton côté Soso"
+    id: bouton_soso
+    filters:
+      # debounce
+      - delayed_on: 10ms
+    on_multi_click:
+      # simple clic
+      - timing:
+        - ON for at most 1s
+        - OFF for at least 0.5s
+        then:
+          - logger.log: "simple clic"
+          - light.toggle: bed_head_ledstrip
+      # double clic
+      - timing:
+        - ON for 0.05s to 0.35s
+        - OFF for at least 0.5s
+        then:
+          - logger.log: "double clic"
+          - if:
+              condition:
+                lambda: |-
+                  return id(bed_head_ledstrip).remote_values.get_brightness() != 0.05;
+              then:
+                - logger.log: "going to lowest luminosity"
+                - light.turn_on:
+                    id: bed_head_ledstrip
+                    brightness: 5%
+              else:
+                - logger.log: "going to highest luminosity"
+                - light.turn_on:
+                    id: bed_head_ledstrip
+                    brightness: 100%
+      # appui très long : mémorisation
+      - timing:
+        - ON for at least 3s
+        then:
+          - logger.log: "appui très long, phase d'avertissement"
+          - script.execute: ledstrip_warning_going_to_be_saved
+          - if:
+              condition:
+                for:
+                  time: 2s
+                  condition:
+                    binary_sensor.is_on: bouton_soso
+              then:
+                # fin de la phase d'avertissement
+                - logger.log: "bouton maintenu appuyé, enregistrement"
+                - script.stop: ledstrip_warning_going_to_be_saved
+                - lambda: |-
+                    id(preset_soso)[0] = id(bed_head_ledstrip).remote_values.get_brightness();
+                    id(preset_soso)[1] = id(bed_head_ledstrip).remote_values.get_red();
+                    id(preset_soso)[2] = id(bed_head_ledstrip).remote_values.get_green();
+                    id(preset_soso)[3] = id(bed_head_ledstrip).remote_values.get_blue();
+              else:
+                # arrêter l'avertissement, au cas où le bouton aurait êté relaché avant la fin de la phase d'avertissement
+                - logger.log: "bouton relaché pendant la phase d'avertissement"
+                - script.stop: ledstrip_warning_going_to_be_saved
+
   - platform: gpio
     pin:
       number: D4
@@ -319,23 +415,3 @@ remote_receiver:
   dump: all
   tolerance: 25%
 
-
-# button
-#   long-pressed: enter settings mode
-#     - first, luminosity preset ; visual feedback when entering this mode is to flicker luminosity
-#       when reaching lowest and highest luminosity, visual feedback
-#     - next, hue preset ; visual feedback when entering this mode is to flicker hue, with full saturation
-#     - next (?), saturation preset ; visual feedback when entering this mode is to flicker saturation, with chosen hue
-#     - finally, validation phase: alternate between before and after settings, and:
-#       - short press: validate and set light to new settings
-#       - long press: cancel and go back to old settings
-#     when in settings mode:
-#       - long press: cycle through values
-#       - short press: validate and go to next preset mode
-#   very long pressed:
-#     visual feedback multiples times as a warning while the button is pressed, allowing to cancel entering into very long pressed mode
-#     if button is still pressed after the warnings, save the current setting for the button that was used for the very long pressed
-#   short-pressed: on/off ; if turning on, set an auto-off timer with decreasing luminosity (turn_off with very long transition ?)
-#   double short-pressed:
-#     if not already at low luminosity, go to low luminosity
-#     else (at low luminosity) highest luminosity
