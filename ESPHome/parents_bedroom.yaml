@@ -29,7 +29,7 @@ wifi:
 
 # Enable logging
 logger:
-  level: INFO  ## minimum DEBUG obligatoire pour dumper les codes infrarouges recus, VERBOSE pour le multi-click
+  level: DEBUG  ## minimum DEBUG obligatoire pour dumper les codes infrarouges recus, VERBOSE pour le multi-click
 
 # Disable Home Assistant API and use MQTT instead, because we're using deep sleep
 api:
@@ -151,8 +151,8 @@ binary_sensor:
     on_multi_click:
       # simple clic
       - timing:
-        - ON for at most 1s
-        - OFF for at least 0.5s
+        - ON for at most 0.35s
+        - OFF for at least 0.1s
         then:
           - logger.log: "simple clic"
           - if:
@@ -178,23 +178,35 @@ binary_sensor:
           - logger.log: "double clic"
           - if:
               condition:
-                # attention à la comparaison entre float ... 0.05 != 0.05 si on n'a pas de chance
-                lambda: |-
-                  return id(bed_head_ledstrip).remote_values.get_brightness() > 0.07 + 0.01;
+                # si la lampe n'est pas encore allumée, on allume avec le preset à la luminosité minimale
+                light.is_off: bed_head_ledstrip
               then:
-                - logger.log: "going to lowest luminosity"
-                - logger.log:
-                    format: "Current luminosity: %.2f"
-                    args:
-                      - id(bed_head_ledstrip).remote_values.get_brightness()
-                - light.turn_on:
-                    id: bed_head_ledstrip
-                    brightness: 7%
+                light.turn_on:
+                  id: bed_head_ledstrip
+                  brightness: 7%
+                  red: !lambda return id(light_preset_soso).remote_values.get_red();
+                  green: !lambda return id(light_preset_soso).remote_values.get_green();
+                  blue: !lambda return id(light_preset_soso).remote_values.get_blue();
               else:
-                - logger.log: "going to highest luminosity"
-                - light.turn_on:
-                    id: bed_head_ledstrip
-                    brightness: 100%
+                if:
+                  condition:
+                    # attention à la comparaison entre float ... 0.05 != 0.05 si on n'a pas de chance
+                    lambda: |-
+                      return id(bed_head_ledstrip).remote_values.get_brightness() > 0.07 + 0.01;
+                  then:
+                    - logger.log: "going to lowest luminosity"
+                    - logger.log:
+                        format: "Current luminosity: %.2f"
+                        args:
+                          - id(bed_head_ledstrip).remote_values.get_brightness()
+                    - light.turn_on:
+                        id: bed_head_ledstrip
+                        brightness: 7%
+                  else:
+                    - logger.log: "going to highest luminosity"
+                    - light.turn_on:
+                        id: bed_head_ledstrip
+                        brightness: 100%
       # appui très long : mémorisation
       - timing:
         - ON for at least 3s
@@ -240,8 +252,8 @@ binary_sensor:
     on_multi_click:
       # simple clic
       - timing:
-        - ON for at most 1s
-        - OFF for at least 0.5s
+        - ON for at most 0.35s
+        - OFF for at least 0.1s
         then:
           - logger.log: "simple clic"
           - if:
@@ -267,23 +279,35 @@ binary_sensor:
           - logger.log: "double clic"
           - if:
               condition:
-                # attention à la comparaison entre float ... 0.05 != 0.05 si on n'a pas de chance
-                lambda: |-
-                  return id(bed_head_ledstrip).remote_values.get_brightness() > 0.07 + 0.01;
+                # si la lampe n'est pas encore allumée, on allume avec le preset à la luminosité minimale
+                light.is_off: bed_head_ledstrip
               then:
-                - logger.log: "going to lowest luminosity"
-                - logger.log:
-                    format: "Current luminosity: %.2f"
-                    args:
-                      - id(bed_head_ledstrip).remote_values.get_brightness()
-                - light.turn_on:
-                    id: bed_head_ledstrip
-                    brightness: 7%
+                light.turn_on:
+                  id: bed_head_ledstrip
+                  brightness: 7%
+                  red: !lambda return id(light_preset_mick).remote_values.get_red();
+                  green: !lambda return id(light_preset_mick).remote_values.get_green();
+                  blue: !lambda return id(light_preset_mick).remote_values.get_blue();
               else:
-                - logger.log: "going to highest luminosity"
-                - light.turn_on:
-                    id: bed_head_ledstrip
-                    brightness: 100%
+                if:
+                  condition:
+                    # attention à la comparaison entre float ... 0.05 != 0.05 si on n'a pas de chance
+                    lambda: |-
+                      return id(bed_head_ledstrip).remote_values.get_brightness() > 0.07 + 0.01;
+                  then:
+                    - logger.log: "going to lowest luminosity"
+                    - logger.log:
+                        format: "Current luminosity: %.2f"
+                        args:
+                          - id(bed_head_ledstrip).remote_values.get_brightness()
+                    - light.turn_on:
+                        id: bed_head_ledstrip
+                        brightness: 7%
+                  else:
+                    - logger.log: "going to highest luminosity"
+                    - light.turn_on:
+                        id: bed_head_ledstrip
+                        brightness: 100%
       # appui très long : mémorisation
       - timing:
         - ON for at least 3s
@@ -333,7 +357,7 @@ binary_sensor:
       then:
         - light.toggle:
             id: bed_head_ledstrip
-            transition_length: 5s
+            transition_length: 2.5s
   - platform: remote_receiver
     id: ir_brightness_up
     lg:
