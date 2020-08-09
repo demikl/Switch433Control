@@ -5,8 +5,8 @@ substitutions:
 
 esphome:
   name: ${devicename}
-  platform: ESP8266
-  board: nodemcuv2
+  platform: ESP32
+  board: nodemcu-32s
 
 wifi:
   ssid: !secret wifi_ssid
@@ -39,12 +39,12 @@ ota:
 
 status_led:
   pin:
-    number: D0
+    number: GPIO1
     inverted: true
 
 i2c:
-  sda: D2
-  scl: D1
+  sda: GPIO21
+  scl: GPIO22
 
 sensor:
   - platform: bme280
@@ -58,15 +58,15 @@ sensor:
     address: 0x76
 
 output:
-  - platform: esp8266_pwm
+  - platform: ledc
     id: red
-    pin: D7
-  - platform: esp8266_pwm
+    pin: GPIO19
+  - platform: ledc
     id: blue
-    pin: D5
-  - platform: esp8266_pwm
+    pin: GPIO18
+  - platform: ledc
     id: green
-    pin: D6
+    pin: GPIO5
 
   # sorties fictives, pour lampes presets
   - platform: template
@@ -116,7 +116,15 @@ script:
               red: 100%
               green: 100%
               blue: 100%
-          - delay: 0.5s
+          - delay: 0.20s
+          - light.turn_on:
+              id: bed_head_ledstrip
+              flash_length: 0.05s
+              brightness: 50%
+              red: 100%
+              green: 0%
+              blue: 0%
+          - delay: 0.20s
 
 binary_sensor:
 # button
@@ -140,9 +148,9 @@ binary_sensor:
 #     else (at low luminosity) highest luminosity
   - platform: gpio
     pin:
-      number: D8
-      # mode: INPUT_PULLDOWN  # D8 is pulled to GND
-      # inverted: True
+      number: GPIO25
+      mode: INPUT_PULLUP
+      inverted: True
     name: "${upper_devicename} bouton côté Soso"
     id: bouton_soso
     filters:
@@ -221,6 +229,8 @@ binary_sensor:
                 # fin de la phase d'avertissement
                 - logger.log: "bouton maintenu appuyé, enregistrement"
                 - script.stop: ledstrip_warning_going_to_be_saved
+                # attendre la fin du flash d'avertissement, pour ne pas enregistrer le flash en preset
+                - delay: 0.2s
                 - light.turn_on:
                     id: light_preset_soso
                     brightness: !lambda return id(bed_head_ledstrip).remote_values.get_brightness();
@@ -232,16 +242,32 @@ binary_sensor:
                     id: bed_head_ledstrip
                     brightness: 50%
                     red: 100%
+                    green: 0%
+                    blue: 0%
+                    flash_length: 0.2s
+                - delay: 0.2s
+                - light.turn_on:
+                    id: bed_head_ledstrip
+                    brightness: 50%
+                    red: 0%
                     green: 100%
+                    blue: 0%
+                    flash_length: 0.2s
+                - delay: 0.2s
+                - light.turn_on:
+                    id: bed_head_ledstrip
+                    brightness: 50%
+                    red: 0%
+                    green: 0%
                     blue: 100%
-                    flash_length: 1s
+                    flash_length: 0.2s
               else:
                 # arrêter l'avertissement, au cas où le bouton aurait êté relaché avant la fin de la phase d'avertissement
                 - logger.log: "bouton relaché pendant la phase d'avertissement"
 
   - platform: gpio
     pin:
-      number: D4
+      number: GPIO26
       mode: INPUT_PULLUP
       inverted: True
     id: bouton_mick
@@ -322,6 +348,8 @@ binary_sensor:
                 # fin de la phase d'avertissement
                 - logger.log: "bouton maintenu appuyé, enregistrement"
                 - script.stop: ledstrip_warning_going_to_be_saved
+                # attendre la fin du flash d'avertissement, pour ne pas enregistrer le flash en preset
+                - delay: 0.2s
                 - light.turn_on:
                     id: light_preset_mick
                     brightness: !lambda return id(bed_head_ledstrip).remote_values.get_brightness();
@@ -333,9 +361,25 @@ binary_sensor:
                     id: bed_head_ledstrip
                     brightness: 50%
                     red: 100%
+                    green: 0%
+                    blue: 0%
+                    flash_length: 0.2s
+                - delay: 0.2s
+                - light.turn_on:
+                    id: bed_head_ledstrip
+                    brightness: 50%
+                    red: 0%
                     green: 100%
+                    blue: 0%
+                    flash_length: 0.2s
+                - delay: 0.2s
+                - light.turn_on:
+                    id: bed_head_ledstrip
+                    brightness: 50%
+                    red: 0%
+                    green: 0%
                     blue: 100%
-                    flash_length: 1s
+                    flash_length: 0.2s
               else:
                 # arrêter l'avertissement, au cas où le bouton aurait êté relaché avant la fin de la phase d'avertissement
                 - logger.log: "bouton relaché pendant la phase d'avertissement"
@@ -546,9 +590,8 @@ binary_sensor:
 
 remote_receiver:
   pin:
-    number: D3 # D5
+    number: GPIO27
     mode: INPUT_PULLUP
     inverted: True
   dump: all
   tolerance: 25%
-
