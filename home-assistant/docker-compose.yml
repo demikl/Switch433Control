@@ -2,7 +2,7 @@ version: '3'
 services:
   homeassistant:
     container_name: home-assistant
-    image: homeassistant/home-assistant:0.113.1
+    image: homeassistant/home-assistant:0.115.2
     volumes:
       - ${HOME}/Switch433Control/home-assistant/config:/config
     environment:
@@ -12,6 +12,7 @@ services:
     depends_on: 
       - mqtt
       - nginx
+
   mqtt:
     container_name: MQTT
     restart: unless-stopped
@@ -21,6 +22,7 @@ services:
     restart: always
     environment:
       - TZ=Europe/Paris
+
   nginx:
     container_name: nginx
     image: nginx:1.15-alpine
@@ -39,6 +41,7 @@ services:
       com.datadoghq.ad.init_configs: '[{},{}]'
       com.datadoghq.ad.instances: '[[{"nginx_status_url": "http://%%host%%:81/nginx_status/"}]]'
       com.datadoghq.ad.logs: '[{"source": "nginx", "service": "nginx"}]'
+
   certbot:
     container_name: certbot
     image: certbot/certbot
@@ -56,8 +59,9 @@ services:
       - ${HOME}/Switch433Control/home-assistant/homie-ota.ini:/app/homie-ota.ini
     ports:
     - "9080:9080"
+
   esphome:
-      image: esphome/esphome:1.14.5
+      image: esphome/esphome:1.15.2
       volumes:
         - ${HOME}/Switch433Control/ESPHome/:/config:rw
         # Use local time for logging timestamps
