@@ -4,13 +4,13 @@ default_config:
 
 # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
 http:
-  base_url: https://demikl.hopto.org
   use_x_forwarded_for: true
   trusted_proxies:
-    - 172.21.0.2
+    - 172.18.0.4
 
 homeassistant:
   external_url: https://demikl.hopto.org
+  internal_url: http://192.168.1.252:8123
   customize:
     switch.sw1:
       hidden: true
@@ -42,16 +42,15 @@ influxdb:
   host: 192.168.1.53
   include:
     entities:
-    - sensor.la_bruffiere_temperature
+    - weather.la_bruffiere
     - sensor.rf_433_mhz_luminosite
     - sensor.rf_433_mhz_temperature
     - sensor.esphome_iot_gardening_1_moisture_1
-    - sensor.esphome_iot_gardening_1_moisture_1_10s
-    - sensor.esphome_iot_gardening_1_moisture_1_30s
-    - sensor.esphome_iot_gardening_1_moisture_1_60s
     - sensor.bme280_temperature
     - sensor.bme280_humidity
     - sensor.bme280_pressure
+    - sensor.chambre_des_parents_humidite
+    - sensor.chambre_des_parents_temperature
 
 meteo_france:
   - city: '85530'
@@ -165,3 +164,6 @@ device_tracker:
 
 upnp:
 
+calendar:
+  - platform: todoist
+    token: !secret todoist_apikey
