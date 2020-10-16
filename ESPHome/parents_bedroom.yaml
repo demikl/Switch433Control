@@ -64,6 +64,7 @@ sensor:
   - platform: bme280
     temperature:
       name: "${upper_devicename} température"
+      accuracy_decimals: 2
     pressure:
       name: "${upper_devicename} baromètre"
     humidity:
@@ -147,6 +148,14 @@ script:
           - delay: 0.20s
 
 binary_sensor:
+  # détecteur de présence infrarouge
+  - platform: gpio
+    pin:
+      number: GPIO4
+      mode: INPUT_PULLDOWN
+    name: "${upper_devicename} PIR Sensor"
+    device_class: occupancy
+
 # button
 #   long-pressed: enter settings mode
 #     - first, luminosity preset ; visual feedback when entering this mode is to flicker luminosity
