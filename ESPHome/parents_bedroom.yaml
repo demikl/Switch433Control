@@ -102,10 +102,10 @@ light:
       - flicker
     on_turn_on:
       # gradually auto turn-off the light after some time
-      - delay: 10min
+      - delay: 5min
       - light.turn_off:
           id: bed_head_ledstrip
-          transition_length: 15min
+          transition_length: 10min
 
   # lampes fictives pour enregistrement des réglages
   - platform: rgb
@@ -155,6 +155,12 @@ binary_sensor:
       mode: INPUT_PULLDOWN
     name: "${upper_devicename} PIR Sensor"
     device_class: occupancy
+    #filters:
+    #  - delayed_off: 2min
+    #on_raw_value:
+    #  then:
+    #    - light.turn_on:
+    #        id: bed_head_ledstrip
 
 # button
 #   long-pressed: enter settings mode
@@ -184,7 +190,7 @@ binary_sensor:
     id: bouton_soso
     filters:
       # debounce
-      - delayed_on: 10ms
+      - delayed_on: 30ms
     on_multi_click:
       # simple clic
       - timing:
@@ -303,7 +309,7 @@ binary_sensor:
     name: "${upper_devicename} bouton côté Mick"
     filters:
       # debounce
-      - delayed_on: 10ms
+      - delayed_on: 30ms
     on_multi_click:
       # simple clic
       - timing:
