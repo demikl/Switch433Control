@@ -7,6 +7,7 @@ http:
   use_x_forwarded_for: true
   trusted_proxies:
     - 172.18.0.4
+    - 172.18.0.2
 
 homeassistant:
   external_url: https://demikl.hopto.org
@@ -22,6 +23,7 @@ homeassistant:
 # Text to speech
 tts:
   - platform: google_translate
+    language: fr
     cache: true
     cache_dir: /tmp/tts
     time_memory: 300
@@ -125,6 +127,9 @@ light:
   - platform: switch
     name: tipi Océane
     entity_id: switch.sw3
+  - platform: switch
+    name: sapin de Noel
+    entity_id: switch.sw4
 
 google_assistant:
   project_id: domotic-146011
@@ -167,3 +172,16 @@ upnp:
 calendar:
   - platform: todoist
     token: !secret todoist_apikey
+
+counter:
+  presence_chambre:
+
+binary_sensor:
+  - platform: template
+    sensors:
+      long_term_parents_bedroom_presence:
+        friendly_name: "Présence long-terme chambre parents"
+        delay_off:
+          minutes: 15
+        value_template: >-
+          {{ is_state('binary_sensor.chambre_des_parents_pir_sensor', 'on') }}

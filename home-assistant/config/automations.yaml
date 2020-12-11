@@ -193,3 +193,54 @@
       language: fr
       message: Au revoir la tablette d''Océane.
     service: tts.google_say
+- id: '1603653219112'
+  alias: allumer Halloween
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: light.arbre_violet
+    from: 'off'
+    to: 'on'
+  condition: []
+  action:
+  - type: turn_on
+    device_id: 71913aa7160911eb97c7454e377fb03a
+    entity_id: light.wled
+    domain: light
+    brightness_pct: 100
+  mode: single
+- id: '1603653251215'
+  alias: eteindre Halloween
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: light.arbre_violet
+    from: 'on'
+    to: 'off'
+  condition: []
+  action:
+  - type: turn_off
+    device_id: 71913aa7160911eb97c7454e377fb03a
+    entity_id: light.wled
+    domain: light
+  mode: single
+
+- alias: presence chambre
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.chambre_des_parents_pir_sensor
+    from: 'off'
+    to: 'on'
+  action:
+  - service: counter.increment
+    entity_id: counter.presence_chambre
+
+- alias: fin presence chambre long terme
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.long_term_parents_bedroom_presence
+      to: 'off'
+  action:
+    - service: counter.reset
+      entity_id: counter.presence_chambre
