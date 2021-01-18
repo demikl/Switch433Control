@@ -185,3 +185,26 @@ binary_sensor:
           minutes: 15
         value_template: >-
           {{ is_state('binary_sensor.chambre_des_parents_pir_sensor', 'on') }}
+
+  - platform: trend
+    sensors:
+      chambre_parents_temp_falling_long:
+        entity_id: sensor.chambre_des_parents_temperature
+        sample_duration: 1800
+        max_samples: 180
+        min_gradient: -0.00028
+        device_class: cold
+
+      chambre_parents_temp_falling_short:
+        entity_id: sensor.chambre_des_parents_temperature
+        sample_duration: 300
+        max_samples: 180
+        min_gradient: -0.00028
+        device_class: cold
+
+      chambre_parents_temp_rising_short:
+        entity_id: sensor.chambre_des_parents_temperature
+        sample_duration: 300
+        max_samples: 180
+        min_gradient: 0.0000277
+        device_class: heat

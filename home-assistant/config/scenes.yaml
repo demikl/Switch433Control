@@ -9,3 +9,512 @@
       friendly_name: derrière télé
       state: 'on'
       supported_features: 0
+- id: '1608299040375'
+  name: Eclairages Noel
+  entities:
+    light.arbre_violet:
+      friendly_name: arbre violet
+      supported_features: 0
+      state: 'on'
+    light.derriere_tele:
+      friendly_name: derrière télé
+      supported_features: 0
+      state: 'off'
+    switch.sw5:
+      friendly_name: sw5
+      state: 'on'
+    light.wled:
+      min_mireds: 153
+      max_mireds: 500
+      effect_list:
+      - Android
+      - Blink
+      - Blink Rainbow
+      - Bouncing Balls
+      - Bpm
+      - Breathe
+      - Candle
+      - Candle Multi
+      - Chase
+      - Chase Flash
+      - Chase Flash Rnd
+      - Chase Rainbow
+      - Chase Random
+      - Chunchun
+      - Circus
+      - Colorful
+      - Colorloop
+      - Colortwinkles
+      - Colorwaves
+      - Dancing Shadows
+      - Dissolve
+      - Dissolve Rnd
+      - Drip
+      - Dynamic
+      - Fade
+      - Fill Noise
+      - Fire 2012
+      - Fire Flicker
+      - Fireworks
+      - Fireworks 1D
+      - Fireworks Starburst
+      - Flow
+      - Glitter
+      - Gradient
+      - Halloween
+      - Halloween Eyes
+      - Heartbeat
+      - ICU
+      - Juggle
+      - Lake
+      - Lighthouse
+      - Lightning
+      - Loading
+      - Merry Christmas
+      - Meteor
+      - Meteor Smooth
+      - Multi Comet
+      - Noise 1
+      - Noise 2
+      - Noise 3
+      - Noise 4
+      - Noise Pal
+      - Oscillate
+      - Pacifica
+      - Palette
+      - Percent
+      - Phased
+      - Phased Noise
+      - Plasma
+      - Police
+      - Police All
+      - Popcorn
+      - Pride 2015
+      - Railway
+      - Rain
+      - Rainbow
+      - Rainbow Runner
+      - Random Colors
+      - Red & Blue
+      - Ripple
+      - Ripple Rainbow
+      - Running
+      - Running 2
+      - Saw
+      - Scan
+      - Scan Dual
+      - Scanner
+      - Scanner Dual
+      - Sine
+      - Sinelon
+      - Sinelon Dual
+      - Sinelon Rainbow
+      - Solid
+      - Solid Glitter
+      - Solid Pattern
+      - Solid Pattern Tri
+      - Sparkle
+      - Sparkle Dark
+      - Sparkle+
+      - Spots
+      - Spots Fade
+      - Stream
+      - Stream 2
+      - Strobe
+      - Strobe Mega
+      - Strobe Rainbow
+      - Sunrise
+      - Sweep
+      - Sweep Random
+      - Theater
+      - Theater Rainbow
+      - Traffic Light
+      - Tri Chase
+      - Tri Fade
+      - Tri Wipe
+      - Twinkle
+      - Twinklecat
+      - Twinklefox
+      - Twinkleup
+      - Two Areas
+      - Two Dots
+      - Washing Machine
+      - Wipe
+      - Wipe Random
+      brightness: 164
+      hs_color:
+      - 0
+      - 0
+      rgb_color:
+      - 255
+      - 255
+      - 255
+      xy_color:
+      - 0.323
+      - 0.329
+      effect: Sunrise
+      intensity: 122
+      palette: Rainbow
+      playlist: 0
+      preset:
+      reverse: false
+      speed: 47
+      friendly_name: WLED
+      icon: mdi:led-strip-variant
+      supported_features: 55
+      state: 'on'
+    light.sapin_de_noel:
+      friendly_name: sapin de Noel
+      supported_features: 0
+      state: 'on'
+  icon: mdi:mdi-pine-tree
+- id: '1609358906803'
+  name: pré minuit nouvel an
+  entities:
+    light.wled:
+      min_mireds: 153
+      max_mireds: 500
+      effect_list:
+      - Android
+      - Blink
+      - Blink Rainbow
+      - Bouncing Balls
+      - Bpm
+      - Breathe
+      - Candle
+      - Candle Multi
+      - Chase
+      - Chase Flash
+      - Chase Flash Rnd
+      - Chase Rainbow
+      - Chase Random
+      - Chunchun
+      - Circus
+      - Colorful
+      - Colorloop
+      - Colortwinkles
+      - Colorwaves
+      - Dancing Shadows
+      - Dissolve
+      - Dissolve Rnd
+      - Drip
+      - Dynamic
+      - Fade
+      - Fill Noise
+      - Fire 2012
+      - Fire Flicker
+      - Fireworks
+      - Fireworks 1D
+      - Fireworks Starburst
+      - Flow
+      - Glitter
+      - Gradient
+      - Halloween
+      - Halloween Eyes
+      - Heartbeat
+      - ICU
+      - Juggle
+      - Lake
+      - Lighthouse
+      - Lightning
+      - Loading
+      - Merry Christmas
+      - Meteor
+      - Meteor Smooth
+      - Multi Comet
+      - Noise 1
+      - Noise 2
+      - Noise 3
+      - Noise 4
+      - Noise Pal
+      - Oscillate
+      - Pacifica
+      - Palette
+      - Percent
+      - Phased
+      - Phased Noise
+      - Plasma
+      - Police
+      - Police All
+      - Popcorn
+      - Pride 2015
+      - Railway
+      - Rain
+      - Rainbow
+      - Rainbow Runner
+      - Random Colors
+      - Red & Blue
+      - Ripple
+      - Ripple Rainbow
+      - Running
+      - Running 2
+      - Saw
+      - Scan
+      - Scan Dual
+      - Scanner
+      - Scanner Dual
+      - Sine
+      - Sinelon
+      - Sinelon Dual
+      - Sinelon Rainbow
+      - Solid
+      - Solid Glitter
+      - Solid Pattern
+      - Solid Pattern Tri
+      - Sparkle
+      - Sparkle Dark
+      - Sparkle+
+      - Spots
+      - Spots Fade
+      - Stream
+      - Stream 2
+      - Strobe
+      - Strobe Mega
+      - Strobe Rainbow
+      - Sunrise
+      - Sweep
+      - Sweep Random
+      - Theater
+      - Theater Rainbow
+      - Traffic Light
+      - Tri Chase
+      - Tri Fade
+      - Tri Wipe
+      - Twinkle
+      - Twinklecat
+      - Twinklefox
+      - Twinkleup
+      - Two Areas
+      - Two Dots
+      - Washing Machine
+      - Wipe
+      - Wipe Random
+      brightness: 255
+      hs_color:
+      - 0
+      - 0
+      rgb_color:
+      - 255
+      - 255
+      - 255
+      xy_color:
+      - 0.323
+      - 0.329
+      effect: Dancing Shadows
+      intensity: 0
+      palette: Default
+      playlist:
+      preset:
+      reverse: false
+      speed: 66
+      friendly_name: WLED
+      icon: mdi:led-strip-variant
+      supported_features: 55
+      state: 'on'
+    switch.wled_nightlight:
+      duration: 60
+      fade: true
+      target_brightness: 0
+      friendly_name: WLED Nightlight
+      icon: mdi:weather-night
+      state: 'off'
+    switch.wled_sync_send:
+      udp_port: 21324
+      friendly_name: WLED Sync Send
+      icon: mdi:upload-network-outline
+      state: 'off'
+    switch.wled_sync_receive:
+      udp_port: 21324
+      friendly_name: WLED Sync Receive
+      icon: mdi:download-network-outline
+      state: 'on'
+    switch.sw5:
+      friendly_name: sw5
+      state: 'off'
+    light.arbre_violet:
+      friendly_name: arbre violet
+      supported_features: 0
+      state: 'off'
+    light.derriere_tele:
+      friendly_name: derrière télé
+      supported_features: 0
+      state: 'on'
+    light.sapin_de_noel:
+      friendly_name: sapin de Noel
+      supported_features: 0
+      state: 'off'
+- id: '1609359058615'
+  name: minuit nouvel an
+  entities:
+    light.wled:
+      min_mireds: 153
+      max_mireds: 500
+      effect_list:
+      - Android
+      - Blink
+      - Blink Rainbow
+      - Bouncing Balls
+      - Bpm
+      - Breathe
+      - Candle
+      - Candle Multi
+      - Chase
+      - Chase Flash
+      - Chase Flash Rnd
+      - Chase Rainbow
+      - Chase Random
+      - Chunchun
+      - Circus
+      - Colorful
+      - Colorloop
+      - Colortwinkles
+      - Colorwaves
+      - Dancing Shadows
+      - Dissolve
+      - Dissolve Rnd
+      - Drip
+      - Dynamic
+      - Fade
+      - Fill Noise
+      - Fire 2012
+      - Fire Flicker
+      - Fireworks
+      - Fireworks 1D
+      - Fireworks Starburst
+      - Flow
+      - Glitter
+      - Gradient
+      - Halloween
+      - Halloween Eyes
+      - Heartbeat
+      - ICU
+      - Juggle
+      - Lake
+      - Lighthouse
+      - Lightning
+      - Loading
+      - Merry Christmas
+      - Meteor
+      - Meteor Smooth
+      - Multi Comet
+      - Noise 1
+      - Noise 2
+      - Noise 3
+      - Noise 4
+      - Noise Pal
+      - Oscillate
+      - Pacifica
+      - Palette
+      - Percent
+      - Phased
+      - Phased Noise
+      - Plasma
+      - Police
+      - Police All
+      - Popcorn
+      - Pride 2015
+      - Railway
+      - Rain
+      - Rainbow
+      - Rainbow Runner
+      - Random Colors
+      - Red & Blue
+      - Ripple
+      - Ripple Rainbow
+      - Running
+      - Running 2
+      - Saw
+      - Scan
+      - Scan Dual
+      - Scanner
+      - Scanner Dual
+      - Sine
+      - Sinelon
+      - Sinelon Dual
+      - Sinelon Rainbow
+      - Solid
+      - Solid Glitter
+      - Solid Pattern
+      - Solid Pattern Tri
+      - Sparkle
+      - Sparkle Dark
+      - Sparkle+
+      - Spots
+      - Spots Fade
+      - Stream
+      - Stream 2
+      - Strobe
+      - Strobe Mega
+      - Strobe Rainbow
+      - Sunrise
+      - Sweep
+      - Sweep Random
+      - Theater
+      - Theater Rainbow
+      - Traffic Light
+      - Tri Chase
+      - Tri Fade
+      - Tri Wipe
+      - Twinkle
+      - Twinklecat
+      - Twinklefox
+      - Twinkleup
+      - Two Areas
+      - Two Dots
+      - Washing Machine
+      - Wipe
+      - Wipe Random
+      brightness: 255
+      hs_color:
+      - 0
+      - 0
+      rgb_color:
+      - 255
+      - 255
+      - 255
+      xy_color:
+      - 0.323
+      - 0.329
+      effect: Dancing Shadows
+      intensity: 255
+      palette: Default
+      playlist:
+      preset: 2
+      reverse: false
+      speed: 255
+      friendly_name: WLED
+      icon: mdi:led-strip-variant
+      supported_features: 55
+      state: 'on'
+    switch.wled_nightlight:
+      duration: 60
+      fade: true
+      target_brightness: 0
+      friendly_name: WLED Nightlight
+      icon: mdi:weather-night
+      state: 'off'
+    switch.wled_sync_send:
+      udp_port: 21324
+      friendly_name: WLED Sync Send
+      icon: mdi:upload-network-outline
+      state: 'off'
+    switch.wled_sync_receive:
+      udp_port: 21324
+      friendly_name: WLED Sync Receive
+      icon: mdi:download-network-outline
+      state: 'on'
+    light.arbre_violet:
+      friendly_name: arbre violet
+      supported_features: 0
+      state: 'off'
+    light.derriere_tele:
+      friendly_name: derrière télé
+      supported_features: 0
+      state: 'on'
+    switch.sw5:
+      friendly_name: sw5
+      state: 'off'
+    light.sapin_de_noel:
+      friendly_name: sapin de Noel
+      supported_features: 0
+      state: 'off'
