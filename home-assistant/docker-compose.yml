@@ -2,7 +2,7 @@ version: '3'
 services:
   homeassistant:
     container_name: home-assistant
-    image: homeassistant/home-assistant:2021.1.4
+    image: ghcr.io/home-assistant/home-assistant:2021.7.3
     volumes:
       - ${HOME}/Switch433Control/home-assistant/config:/config
     environment:
@@ -62,7 +62,7 @@ services:
 
   esphome:
       container_name: esphome
-      image: esphome/esphome:1.15.3
+      image: esphome/esphome:1.20.0
       volumes:
         - ${HOME}/Switch433Control/ESPHome/:/config:rw
         # Use local time for logging timestamps

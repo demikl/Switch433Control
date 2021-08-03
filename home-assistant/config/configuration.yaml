@@ -22,13 +22,18 @@ homeassistant:
 
 # Text to speech
 tts:
-  - platform: google_translate
-    language: fr
-    cache: true
-    cache_dir: /tmp/tts
-    time_memory: 300
-    base_url: https://demikl.hopto.org
-    service_name: google_say
+#  - platform: google_translate
+#    language: fr
+#    cache: true
+#    cache_dir: /tmp/tts
+#    time_memory: 300
+#    base_url: https://demikl.hopto.org
+#    service_name: google_say
+   - platform: watson_tts
+     watson_apikey: !secret ibm_watson_tts_apikey
+     watson_url: "https://api.eu-de.text-to-speech.watson.cloud.ibm.com/instances/962772bb-b33f-431f-a63a-d0254ce49612"
+     #voice: "fr-FR_ReneeV3Voice"
+     voice: "fr-FR_NicolasV3Voice"
 
 sensor: !include sensors.yaml
 group: !include groups.yaml

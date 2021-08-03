@@ -350,3 +350,238 @@
       preset: 12
   - scene: scene.eclairages_noel
   mode: single
+- id: '1618470853529'
+  alias: Lumiere bureau controlée par M5 Atom Lite
+  description: ''
+  trigger:
+  - type: turned_on
+    platform: device
+    device_id: 42d3a0a925565d9371340e8d68432628
+    entity_id: binary_sensor.chambre_de_raphael_button
+    domain: binary_sensor
+  condition: []
+  action:
+  - type: toggle
+    device_id: 9a37f5bf1dfb4a269154141145453217
+    entity_id: light.fastled_spi_light
+    domain: light
+  mode: single
+- id: '1620812375239'
+  alias: serre trop chaude
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.ewelink_th01_02_temperature
+    above: '30'
+    for: 0:10:00
+  condition: []
+  action:
+  - service: media_player.volume_set
+    target:
+      device_id: f953932621e341679b036fe8c96db07b
+    data:
+      volume_level: 1
+  - service: tts.watson_tts_say
+    data:
+      entity_id: media_player.nest_mini_gris
+      message: Ouh là là ! Il fait vraiment très chaud dans la serre.
+  - device_id: cf90bd6ec1ef47a2aec0d78c3551befa
+    domain: mobile_app
+    type: notify
+    title: Serre
+    message: J'ai trop chaud !
+  mode: single
+- id: '1621094605604'
+  alias: Porte buanderie garage restée ouverte
+  description: ''
+  trigger:
+  - type: opened
+    platform: device
+    device_id: 5a0b702e15439bf746789259206e457c
+    entity_id: binary_sensor.porte_buanderie_garage_ias_zone
+    domain: binary_sensor
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  condition: []
+  action:
+  - service: tts.watson_tts_say
+    data:
+      entity_id: media_player.nest_mini_gris
+      message: Attention ! La porte d'accès au garage depuis la buanderie est restée
+        ouverte.
+  mode: single
+- id: '1622968753443'
+  alias: Sonnette quand porte d'entrée ouverte
+  description: ''
+  trigger:
+  - type: opened
+    platform: device
+    device_id: 804b50c855c117bb0d13e425f5967fd4
+    entity_id: binary_sensor.porte_dentree_ias_zone
+    domain: binary_sensor
+  condition: []
+  action:
+  - scene: scene.e5pbi5mev9hkaya3
+  mode: restart
+- id: '1622969147788'
+  alias: Alarme nocturne
+  description: ''
+  trigger:
+  - type: opened
+    platform: device
+    device_id: 5a0b702e15439bf746789259206e457c
+    entity_id: binary_sensor.porte_buanderie_garage_ias_zone
+    domain: binary_sensor
+  - type: opened
+    platform: device
+    device_id: 804b50c855c117bb0d13e425f5967fd4
+    entity_id: binary_sensor.porte_dentree_ias_zone
+    domain: binary_sensor
+  - type: opened
+    platform: device
+    device_id: 624822e6f15082d65b141a4b10afcb5f
+    entity_id: binary_sensor.porte_fenetre_buanderie_terrasse_ias_zone
+    domain: binary_sensor
+  - type: motion
+    platform: device
+    device_id: 9d786ae16f50d9f3a36c81040ea20da5
+    entity_id: binary_sensor.ewelink_ms01_01_ias_zone
+    domain: binary_sensor
+  - type: motion
+    platform: device
+    device_id: 33c0fe37b7698e83156299060586032c
+    entity_id: binary_sensor.ewelink_ms01_02_ias_zone
+    domain: binary_sensor
+  condition:
+  - condition: time
+    after: '1:00:00'
+    before: '7:00:00'
+  action:
+  - scene: scene.magthfzosyajtzm4
+  - service: light.turn_on
+    target:
+      device_id: 1a37bbd9d8b645b992befc6b99c9882d
+    data:
+      brightness_pct: 100
+      rgb_color:
+      - 255
+      - 0
+      - 0
+      flash: long
+  mode: single
+- id: '1622970087240'
+  alias: Désactiver alarme si bouton lit
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.chambre_des_parents_bouton_cote_mick
+    from: 'off'
+    to: 'on'
+  - platform: state
+    entity_id: binary_sensor.chambre_des_parents_bouton_cote_soso
+    from: 'off'
+    to: 'on'
+  condition: []
+  action:
+  - scene: scene.awsxgl8obri7akqa
+  - service: automation.turn_off
+    target:
+      entity_id: automation.alarme_nocturne
+  - service: light.turn_on
+    target:
+      entity_id:
+      - light.arbre_violet
+      - light.derriere_tele
+  - delay:
+      hours: 0
+      minutes: 15
+      seconds: 0
+      milliseconds: 0
+  - service: automation.turn_on
+    target:
+      entity_id: automation.alarme_nocturne
+  - service: light.turn_off
+    target:
+      entity_id:
+      - light.derriere_tele
+      - light.arbre_violet
+  mode: single
+- id: '1626075685464'
+  alias: Teams - en réunion
+  description: ''
+  trigger:
+  - type: turned_on
+    platform: device
+    device_id: 93f7c5c58a6176a5116bf82153292fd5
+    entity_id: binary_sensor.in_meeting
+    domain: binary_sensor
+  - type: turned_on
+    platform: device
+    device_id: 93f7c5c58a6176a5116bf82153292fd5
+    entity_id: binary_sensor.muted
+    domain: binary_sensor
+  - type: turned_off
+    platform: device
+    device_id: 93f7c5c58a6176a5116bf82153292fd5
+    entity_id: binary_sensor.muted
+    domain: binary_sensor
+  condition:
+  - type: is_on
+    condition: device
+    device_id: 93f7c5c58a6176a5116bf82153292fd5
+    entity_id: binary_sensor.in_meeting
+    domain: binary_sensor
+  - condition: device
+    type: is_on
+    device_id: 9a37f5bf1dfb4a269154141145453217
+    entity_id: light.fastled_spi_light
+    domain: light
+  action:
+  - choose:
+    - conditions:
+      - type: is_on
+        condition: device
+        device_id: 93f7c5c58a6176a5116bf82153292fd5
+        entity_id: binary_sensor.muted
+        domain: binary_sensor
+      sequence:
+      - service: light.turn_on
+        target:
+          device_id: 9a37f5bf1dfb4a269154141145453217
+        data:
+          color_name: red
+    - conditions:
+      - type: is_off
+        condition: device
+        device_id: 93f7c5c58a6176a5116bf82153292fd5
+        entity_id: binary_sensor.muted
+        domain: binary_sensor
+      sequence:
+      - service: light.turn_on
+        target:
+          device_id: 9a37f5bf1dfb4a269154141145453217
+        data:
+          color_name: green
+    default: []
+  - service: switch.turn_off
+    target:
+      entity_id: switch.flux
+  mode: restart
+- id: '1626075749909'
+  alias: Teams - fin de réunion
+  description: ''
+  trigger:
+  - type: turned_off
+    platform: device
+    device_id: 93f7c5c58a6176a5116bf82153292fd5
+    entity_id: binary_sensor.in_meeting
+    domain: binary_sensor
+  condition: []
+  action:
+  - service: switch.turn_on
+    target:
+      entity_id: switch.flux
+  mode: restart
