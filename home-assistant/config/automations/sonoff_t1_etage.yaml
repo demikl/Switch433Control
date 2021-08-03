@@ -1,0 +1,126 @@
+- alias: Sonoff T1 étage - état lumière
+  id: '5338975267884'
+  trigger:
+    - id: all_lights_off
+      platform: template
+      value_template: >
+        {% set domain = 'light' %}
+        {% set state = 'off' %}
+
+        {%- set keep = namespace(lights=[]) %}
+        {%- for l in states[domain] %}
+          {%- if 'prereglage' not in l.entity_id %}
+            {%- set keep.lights = keep.lights + [l] %}
+          {%- endif %}
+        {%- endfor %}
+        {%- set keep.lights = keep.lights | rejectattr('state', 'eq', 'unavailable') | list %}
+
+        {{ keep.lights | count == keep.lights | selectattr('state','eq', state) | list | count }}
+
+    - id: any_light_on
+      platform: template
+      value_template: >
+        {% set domain = 'light' %}
+        {% set state = 'on' %}
+
+        {%- set keep = namespace(lights=[]) %}
+        {%- for l in states[domain] %}
+          {%- if 'prereglage' not in l.entity_id %}
+            {%- set keep.lights = keep.lights + [l] %}
+          {%- endif %}
+        {%- endfor %}
+        {%- set keep.lights = keep.lights | rejectattr('state', 'eq', 'unavailable') | list %}
+        {{ keep.lights | selectattr('state','eq', state) | list | count > 0 }}
+
+  action:
+    - choose:
+      - alias: "Turn off switch if all lights are OFF"
+        conditions:
+        - condition: trigger
+          id: all_lights_off
+        sequence:
+          - service: switch.turn_off
+            target:
+                entity_id: switch.tasmota2
+      - alias: "Turn on switch if any light is ON"
+        conditions:
+        - condition: trigger
+          id: any_light_on
+        sequence:
+          - service: switch.turn_on
+            target:
+                entity_id: switch.tasmota2
+- alias: Sonoff T1 étage - contrôle lumière
+  id: '20210803_sonoff_t1_controle_lumiere'
+  trigger:
+    - id: switch_on
+      platform: device
+      domain: switch
+      device_id: 221419aff5453dfe4851ae2f6d632142
+      entity_id: switch.tasmota2
+      type: turned_on
+    - id: switch_off
+      platform: device
+      domain: switch
+      device_id: 221419aff5453dfe4851ae2f6d632142
+      entity_id: switch.tasmota2
+      type: turned_off
+  condition:
+    alias: "soit lumieres eteintes et on active le switch, soit lumieres allumées et on désactive le switch"
+    condition: or
+    conditions:
+      - alias: "lumières éteintes et on veut allumer"
+        condition: and
+        conditions:
+          - condition: trigger
+            id: switch_on
+          - alias: "lights are OFF"
+            condition: template
+            value_template: >
+              {% set domain = 'light' %}
+              {% set state = 'off' %}
+
+              {%- set keep = namespace(lights=[]) %}
+              {%- for l in states[domain] %}
+                {%- if 'prereglage' not in l.entity_id %}
+                  {%- set keep.lights = keep.lights + [l] %}
+                {%- endif %}
+              {%- endfor %}
+              {%- set keep.lights = keep.lights | rejectattr('state', 'eq', 'unavailable') | list %}
+
+              {{ keep.lights | count == keep.lights | selectattr('state','eq', state) | list | count }}
+      - alias: "lumière allumée et on veut éteindre"
+        condition: and
+        conditions:
+          - condition: trigger
+            id: switch_off
+          - alias: "any light is ON"
+            condition: template
+            value_template: >
+              {% set domain = 'light' %}
+              {% set state = 'on' %}
+
+              {%- set keep = namespace(lights=[]) %}
+              {%- for l in states[domain] %}
+                {%- if 'prereglage' not in l.entity_id %}
+                  {%- set keep.lights = keep.lights + [l] %}
+                {%- endif %}
+              {%- endfor %}
+              {%- set keep.lights = keep.lights | rejectattr('state', 'eq', 'unavailable') | list %}
+
+              {{ keep.lights | selectattr('state','eq', state) | list | count > 0 }}
+  action:
+    - choose:
+      - conditions:
+          condition: trigger
+          id: switch_on
+        sequence:
+          - service: light.turn_on
+            entity_id:
+              - light.tipi_oceane
+      - conditions:
+          condition: trigger
+          id: switch_off
+        sequence:
+          - service: light.turn_off
+            entity_id: all

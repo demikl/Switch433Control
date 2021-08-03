@@ -37,7 +37,8 @@ tts:
 
 sensor: !include sensors.yaml
 group: !include groups.yaml
-automation: !include automations.yaml
+automation ui: !include automations.yaml
+automation sonoff: !include automations/sonoff_t1_etage.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
 
