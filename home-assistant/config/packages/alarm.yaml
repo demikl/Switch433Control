@@ -1,0 +1,175 @@
+alarm_control_panel:
+  - platform: manual
+    name: Home Alarm
+    arming_time: 30
+    delay_time: 20
+    trigger_time: 10
+    disarmed:
+      trigger_time: 0
+    armed_home:
+      arming_time: 0
+      delay_time: 0
+    armed_night:
+      delay_time: 10
+
+
+# Déclenchements de l'alarme
+
+automation:
+- alias: 'Alarm - Trigger while armed away'
+  id: '20210804-alarm-trigger-while-armed-away'
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.chambre_des_parents_pir_sensor
+      to: "active"
+    - platform: state
+      entity_id: binary_sensor.porte_buanderie_garage_ias_zone
+      to: "on"
+    - platform: state
+      entity_id: binary_sensor.porte_dentree_ias_zone
+      to: "on"
+    - platform: state
+      entity_id: binary_sensor.porte_fenetre_buanderie_terrasse_ias_zone
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_away
+  action:
+    service: alarm_control_panel.alarm_trigger
+    target:
+      entity_id: alarm_control_panel.home_alarm
+
+- alias: 'Alarm - Trigger while armed night'
+  id: '20210804-alarm-trigger-while-armed-night'
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.ewelink_ms01_01_ias_zone
+      to: "active"
+    - platform: state
+      entity_id: binary_sensor.ewelink_ms01_01_ias_zone
+      to: "active"
+    - platform: state
+      entity_id: binary_sensor.porte_buanderie_garage_ias_zone
+      to: "on"
+    - platform: state
+      entity_id: binary_sensor.porte_dentree_ias_zone
+      to: "on"
+    - platform: state
+      entity_id: binary_sensor.porte_fenetre_buanderie_terrasse_ias_zone
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_night
+  action:
+    service: alarm_control_panel.alarm_trigger
+    target:
+      entity_id: alarm_control_panel.home_alarm
+
+
+# Activation / désactivation de l'alarme
+
+- alias: 'Alarm - Arm night'
+  id: '20210804-alarm-arm-night'
+  trigger:
+    - id: switch_on
+      platform: device
+      domain: switch
+      device_id: 221419aff5453dfe4851ae2f6d632142
+      entity_id: switch.sonofft1_alarme_etage
+      type: turned_on
+  action:
+    service: alarm_control_panel.alarm_arm_night
+    target:
+      entity_id: alarm_control_panel.home_alarm
+
+- alias: 'Alarm - Disarm'
+  id: '20210804-alarm-disarm'
+  trigger:
+    - id: switch_off
+      platform: device
+      domain: switch
+      device_id: 221419aff5453dfe4851ae2f6d632142
+      entity_id: switch.sonofft1_alarme_etage
+      type: turned_off
+  action:
+    service: alarm_control_panel.alarm_disarm
+    target:
+      entity_id: alarm_control_panel.home_alarm
+
+- alias: 'Alarm - Synchro état armé / bouton'
+  id: '20210804-alarm-synchro-state-sonoff-t1'
+  trigger:
+    - id: 'disarm'
+      platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: "disarmed"
+    - id: 'arm'
+      platform: state
+      entity_id: alarm_control_panel.home_alarm
+      from: "disarmed"
+  action:
+    - alias: "ON or OFF"
+      choose:
+      - conditions:
+          condition: trigger
+          id: disarm
+        sequence:
+          service: switch.turn_off
+          target:
+            entity_id: switch.sonofft1_alarme_etage
+      - conditions:
+          condition: trigger
+          id: arm
+        sequence:
+          service: switch.turn_on
+          target:
+            entity_id: switch.sonofft1_alarme_etage
+
+
+# Notifications
+- alias: 'Alarme - notif pending'
+  id: '20210804-alarm-notif-pending'
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: "pending"
+  action:
+    - service: notify.notify
+      data:
+        message: "ALARM! The alarm is in pending status at {{ states('sensor.date_time') }}"
+
+- alias: 'Alarme - Send notification when alarm triggered'
+  id: '20210804-alarm-notif-triggered'
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: "triggered"
+  action:
+    - service: notify.notify
+      data:
+        message: "ALARM! The alarm has been triggered at {{ states('sensor.date_time') }}"
+
+- alias: 'Alarme - Send notification when alarm is Armed in Night mode'
+  id: '20210804-alarm-notif-armed-night'
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: "armed_night"
+  action:
+    - service: notify.notify
+      data:
+        # Using multi-line notation allows for easier quoting
+        message: >
+          ALARM! The alarm is armed in Night mode {{ states('sensor.date_time') }}
+- alias: 'Alarme - Send notification when alarm is Disarmed'
+  id: '20210804-alarm-notif-disarmed'
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: "disarmed"
+  action:
+    - service: notify.notify
+      data:
+        message: "ALARM! The alarm is Disarmed at {{ states('sensor.date_time') }}"

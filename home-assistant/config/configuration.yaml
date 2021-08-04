@@ -19,6 +19,8 @@ homeassistant:
       hidden: true
     switch.sw3:
       hidden: true
+  packages:
+    alarm: !include packages/alarm.yaml
 
 # Text to speech
 tts:
