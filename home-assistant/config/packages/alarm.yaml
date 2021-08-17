@@ -12,6 +12,13 @@ alarm_control_panel:
     armed_night:
       delay_time: 10
 
+notify:
+  - name: ALL_DEVICES
+    platform: group
+    services:
+      - service: mobile_app_telephone_mickael_oppo_rx17_neo
+      - service: mobile_app_telephone_soso_honor_8x
+
 
 # Déclenchements de l'alarme
 
@@ -21,7 +28,7 @@ automation:
   trigger:
     - platform: state
       entity_id: binary_sensor.chambre_des_parents_pir_sensor
-      to: "active"
+      to: "on"
     - platform: state
       entity_id: binary_sensor.porte_buanderie_garage_ias_zone
       to: "on"
@@ -44,11 +51,11 @@ automation:
   id: '20210804-alarm-trigger-while-armed-night'
   trigger:
     - platform: state
-      entity_id: binary_sensor.ewelink_ms01_01_ias_zone
-      to: "active"
+      entity_id: binary_sensor.zb_pir_buanderie_ias_zone
+      to: "on"
     - platform: state
-      entity_id: binary_sensor.ewelink_ms01_01_ias_zone
-      to: "active"
+      entity_id: binary_sensor.zb_pir_salon_ias_zone
+      to: "on"
     - platform: state
       entity_id: binary_sensor.porte_buanderie_garage_ias_zone
       to: "on"
@@ -98,7 +105,7 @@ automation:
     target:
       entity_id: alarm_control_panel.home_alarm
 
-- alias: 'Alarm - Synchro état armé / bouton'
+- alias: 'Alarme - Synchro état armé / bouton'
   id: '20210804-alarm-synchro-state-sonoff-t1'
   trigger:
     - id: 'disarm'
@@ -127,6 +134,51 @@ automation:
           target:
             entity_id: switch.sonofft1_alarme_etage
 
+- alias: 'Alarme - Acquittement via boutons tête de lit'
+  id: '20210804-alarm-acquittement'
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.chambre_des_parents_bouton_cote_mick
+      to: 'on'
+    - platform: state
+      entity_id: binary_sensor.chambre_des_parents_bouton_cote_soso
+      to: 'on'
+  condition:
+    - alias: "alarme pré-déclenchée"
+      condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: "pending"
+    - alias: "alarme déclenchée"
+      condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: "triggered"
+  action:
+    service: alarm_control_panel.alarm_arm_night
+    target:
+      entity_id: alarm_control_panel.home_alarm
+
+- alias: "Alarme - CTA notif telephone - allumer sirène"
+  trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: "ALARM_SIREN"
+  action:
+    service: switch.turn_on
+    target:
+      entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
+
+- alias: "Alarme - CTA notif telephone - silence sirène"
+  trigger:
+    - platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: "ALARM_SILENCE"
+  action:
+    service: switch.turn_off
+    target:
+      entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
+
 
 # Notifications
 - alias: 'Alarme - notif pending'
@@ -136,9 +188,18 @@ automation:
       entity_id: alarm_control_panel.home_alarm
       to: "pending"
   action:
-    - service: notify.notify
+    - service: notify.mobile_app_telephone_mickael_oppo_rx17_neo
       data:
-        message: "ALARM! The alarm is in pending status at {{ states('sensor.date_time') }}"
+        title: "Alarme"
+        message: >
+          ALARME ! Pré-alarme {{ now() }}
+          Trigger event:
+            - platform: {{ trigger.platform }}
+            - event: {{ trigger.event }}
+            - event_type: {{ trigger.event_type }}
+            - event data: {{ trigger.event.data }}
+            - from state: {{ trigger.from_state }}
+            - to state: {{ trigger.to_state }}
 
 - alias: 'Alarme - Send notification when alarm triggered'
   id: '20210804-alarm-notif-triggered'
@@ -147,9 +208,19 @@ automation:
       entity_id: alarm_control_panel.home_alarm
       to: "triggered"
   action:
-    - service: notify.notify
+    - service: notify.ALL_DEVICES
       data:
-        message: "ALARM! The alarm has been triggered at {{ states('sensor.date_time') }}"
+        title: "Alarme"
+        message: "Déclenchée le {{ now() }}"
+        data:
+          actions:
+            - action: "URI"
+              title: "Voir états"
+              uri: "/lovelace/alarme"
+            - action: "ALARM_SIREN"
+              title: "Sonner la sirène"
+            - action: "ALARM_SILENCE"
+              title: "Silence"
 
 - alias: 'Alarme - Send notification when alarm is Armed in Night mode'
   id: '20210804-alarm-notif-armed-night'
@@ -158,11 +229,11 @@ automation:
       entity_id: alarm_control_panel.home_alarm
       to: "armed_night"
   action:
-    - service: notify.notify
+    - service: notify.mobile_app_telephone_mickael_oppo_rx17_neo
       data:
-        # Using multi-line notation allows for easier quoting
+        title: "Alarme"
         message: >
-          ALARM! The alarm is armed in Night mode {{ states('sensor.date_time') }}
+          ALARME - Activée en mode nuit à {{ now() }}
 - alias: 'Alarme - Send notification when alarm is Disarmed'
   id: '20210804-alarm-notif-disarmed'
   trigger:
@@ -170,6 +241,14 @@ automation:
       entity_id: alarm_control_panel.home_alarm
       to: "disarmed"
   action:
-    - service: notify.notify
+    - service: notify.mobile_app_telephone_mickael_oppo_rx17_neo
       data:
-        message: "ALARM! The alarm is Disarmed at {{ states('sensor.date_time') }}"
+        title: "Alarme"
+        message: "ALARME - Désactivée à {{ now() }}"
+
+script:
+  arm_alarm_away:
+    sequence:
+      - service: alarm_control_panel.alarm_arm_away
+        target:
+          entity_id: alarm_control_panel.home_alarm
