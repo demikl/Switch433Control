@@ -201,6 +201,18 @@ automation:
             - from state: {{ trigger.from_state }}
             - to state: {{ trigger.to_state }}
 
+- alias: 'Alarme - Sirène avant déclenchement'
+  id: '20210828-alarm-siren-pending'
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: "pending"
+  action:
+    - service: script.siren_sound
+      data:
+        melody: "* Sirène fin d'escape game"
+        mute_level: 1
+
 - alias: 'Alarme - Send notification when alarm triggered'
   id: '20210804-alarm-notif-triggered'
   trigger:
@@ -221,6 +233,18 @@ automation:
               title: "Sonner la sirène"
             - action: "ALARM_SILENCE"
               title: "Silence"
+
+- alias: 'Alarme - Sirène a fond'
+  id: '20210828-alarm-siren-high'
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: "triggered"
+  action:
+    - service: script.siren_sound
+      data:
+        melody: "** Alarme magasin"
+        mute_level: 0
 
 - alias: 'Alarme - Send notification when alarm is Armed in Night mode'
   id: '20210804-alarm-notif-armed-night'
@@ -252,3 +276,84 @@ script:
       - service: alarm_control_panel.alarm_arm_away
         target:
           entity_id: alarm_control_panel.home_alarm
+  
+  siren_sound:
+    description: "Fait sonner la sirène"
+    variables:
+      melodies:
+        - Sonnette d'entrée maison
+        - Lettre a Élise
+        - Horloge Westminster
+        - Notification musicale
+        - Musique marche militaire
+        - Musique classique
+        - "** Alarme magasin"
+        - "* Sirène fin d'escape game"
+        - "** Bip bip aigu genre portique de sécurité"
+        - "** Alarme incendie domestique"
+        - "* Chiens qui aboient"
+        - "** alarme type voiture"
+        - "* Sonnette d'entrée boutique"
+        - Téléphone années 60
+        - "* Voiture police américaine"
+        - Départ de course sportive (ding.. ding... ding.. DONG !)
+        - Réveil type Soso
+        - "* Cloche de fin d'école, très aiguë"
+    fields:
+      melody:
+        description: "Musique ou effet vocal de la sirène"
+        selector:
+          select:
+            options:
+              - Sonnette d'entrée maison
+              - Lettre a Élise
+              - Horloge Westminster
+              - Notification musicale
+              - Musique marche militaire
+              - Musique classique
+              - "** Alarme magasin"
+              - "* Sirène fin d'escape game"
+              - "** Bip bip aigu genre portique de sécurité"
+              - "** Alarme incendie domestique"
+              - "* Chiens qui aboient"
+              - "** alarme type voiture"
+              - "* Sonnette d'entrée boutique"
+              - Téléphone années 60
+              - "* Voiture police américaine"
+              - Départ de course sportive (ding.. ding... ding.. DONG !)
+              - Réveil type Soso
+              - "* Cloche de fin d'école, très aiguë"
+      mute_level:
+        description: "Intensité de la mise en sourdine"
+        default: 0
+        selector:
+          number:
+            min: 0
+            max: 2
+    mode: restart
+    sequence:
+      - alias: "set melody"
+        service: zha.set_zigbee_cluster_attribute
+        data:
+          ieee: '80:4b:50:ff:fe:04:84:00'
+          endpoint_id: 1
+          cluster_id: 0xef00
+          attribute: 0x0466
+          value: "{{ melodies.index(melody) }}"
+      - alias: "set mute level"
+        service: zha.set_zigbee_cluster_attribute
+        data:
+          ieee: '80:4b:50:ff:fe:04:84:00'
+          endpoint_id: 1
+          cluster_id: 0xef00
+          attribute: 0x0474
+          value: "{{ mute_level }}"
+      - alias: "turn on siren"
+        service: zha.set_zigbee_cluster_attribute
+        data:
+          ieee: '80:4b:50:ff:fe:04:84:00'
+          endpoint_id: 1
+          cluster_id: 0xef00
+          attribute: 0x0168
+          value: 1
+          
