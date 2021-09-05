@@ -153,9 +153,12 @@ automation:
       entity_id: alarm_control_panel.home_alarm
       state: "triggered"
   action:
-    service: alarm_control_panel.alarm_arm_night
+  - service: alarm_control_panel.alarm_arm_night
     target:
       entity_id: alarm_control_panel.home_alarm
+  - service: switch.turn_off
+    target:
+      entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
 
 - alias: "Alarme - CTA notif telephone - allumer sirène"
   trigger:
@@ -212,6 +215,7 @@ automation:
       data:
         melody: "* Sirène fin d'escape game"
         mute_level: 1
+        duration: 60
 
 - alias: 'Alarme - Send notification when alarm triggered'
   id: '20210804-alarm-notif-triggered'
@@ -245,6 +249,7 @@ automation:
       data:
         melody: "** Alarme magasin"
         mute_level: 0
+        duration: 120
 
 - alias: 'Alarme - Send notification when alarm is Armed in Night mode'
   id: '20210804-alarm-notif-armed-night'
@@ -269,6 +274,27 @@ automation:
       data:
         title: "Alarme"
         message: "ALARME - Désactivée à {{ now() }}"
+          
+- alias: 'Alarme - Stopper sirène quand alarme RAZ'
+  id: '20210905-alarm-stop-siren'
+  trigger:
+    - id: alarm_was_triggered_and_is_now_idle
+      platform: state
+      entity_id: alarm_control_panel.home_alarm
+      from: "triggered"
+    - id: alarm_has_been_deactived
+      platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: "disarmed"
+  condition:
+  - alias: "sirene active"
+    condition: state
+    entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
+    state: "on"
+  action:
+    - service: switch.turn_off
+      target:
+        entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
 
 script:
   arm_alarm_away:
@@ -300,6 +326,13 @@ script:
         - Réveil type Soso
         - "* Cloche de fin d'école, très aiguë"
     fields:
+      duration:
+        description: "how long the sound should occur - seconds"
+        default: 10
+        selector:
+          number:
+            min: 5
+            max: 300
       melody:
         description: "Musique ou effet vocal de la sirène"
         selector:
@@ -348,6 +381,14 @@ script:
           cluster_id: 0xef00
           attribute: 0x0474
           value: "{{ mute_level }}"
+      - alias: "set sound duration"
+        service: zha.set_zigbee_cluster_attribute
+        data:
+          ieee: '80:4b:50:ff:fe:04:84:00'
+          endpoint_id: 1
+          cluster_id: 0xef00
+          attribute: 0x0267
+          value: "{{ duration }}"
       - alias: "turn on siren"
         service: zha.set_zigbee_cluster_attribute
         data:
@@ -356,4 +397,3 @@ script:
           cluster_id: 0xef00
           attribute: 0x0168
           value: 1
-          
