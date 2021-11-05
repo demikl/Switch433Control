@@ -33,7 +33,10 @@ wifi:
 
 # Enable logging
 logger:
-  level: DEBUG  ## minimum DEBUG obligatoire pour dumper les codes infrarouges recus, VERBOSE pour le multi-click
+  level: INFO  ## minimum DEBUG obligatoire pour dumper les codes infrarouges recus, VERBOSE pour le multi-click
+  #level: DEBUG
+  #level: VERBOSE
+  #level: VERY_VERBOSE
 
 # Disable Home Assistant API and use MQTT instead, because we're using deep sleep
 api:
@@ -54,10 +57,23 @@ i2c:
   sda: GPIO21
   scl: GPIO22
 
+#esp32_ble_tracker:
+#
+#text_sensor:
+#  - platform: ble_scanner
+#    name: "BLE Devices Scanner"
+
 sensor:
+#  - platform: xiaomi_miscale2
+#    mac_address: 'D3:F0:25:B8:D4:88'
+#    weight:
+#      name: "Xiaomi Mi Scale Weight"
+#    impedance:
+#      name: "Xiaomi Mi Scale Impedance"
+
   - platform: wifi_signal
     name: "${upper_devicename} WiFi Signal Sensor"
-    update_interval: 60s
+    update_interval: 600s
   - platform: uptime
     name: ${upper_devicename} Uptime Sensor
 
@@ -69,7 +85,7 @@ sensor:
       name: "${upper_devicename} baromètre"
     humidity:
       name: "${upper_devicename} humidité"
-    update_interval: 60s
+    update_interval: 300s
     address: 0x76
 
 output:
@@ -155,7 +171,9 @@ binary_sensor:
       mode: INPUT_PULLDOWN
     name: "${upper_devicename} PIR Sensor"
     device_class: occupancy
-    #filters:
+    filters:
+      # debounce
+      - delayed_on: 1s
     #  - delayed_off: 2min
     #on_raw_value:
     #  then:
@@ -535,7 +553,7 @@ binary_sensor:
             id: bed_head_ledstrip
             red: !lambda |-
               float current = id(bed_head_ledstrip).remote_values.get_red();
-              return clamp(current - 0.1, 0.0f, 1.0f);
+              return esphome::clamp(current - 0.1f, 0.0f, 1.0f);
   - platform: remote_receiver
     id: ir_green_up
     lg:
@@ -547,7 +565,7 @@ binary_sensor:
             id: bed_head_ledstrip
             green: !lambda |-
               float current = id(bed_head_ledstrip).remote_values.get_green();
-              return clamp(current + 0.1, 0.0f, 1.0f);
+              return esphome::clamp(current + 0.1f, 0.0f, 1.0f);
   - platform: remote_receiver
     id: ir_green_down
     lg:
@@ -559,7 +577,7 @@ binary_sensor:
             id: bed_head_ledstrip
             green: !lambda |-
               float current = id(bed_head_ledstrip).remote_values.get_green();
-              return clamp(current - 0.1, 0.0f, 1.0f);
+              return esphome::clamp(current - 0.1f, 0.0f, 1.0f);
   - platform: remote_receiver
     id: ir_blue_up
     lg:
@@ -571,7 +589,7 @@ binary_sensor:
             id: bed_head_ledstrip
             blue: !lambda |-
               float current = id(bed_head_ledstrip).remote_values.get_blue();
-              return clamp(current + 0.1, 0.0f, 1.0f);
+              return esphome::clamp(current + 0.1f, 0.0f, 1.0f);
   - platform: remote_receiver
     id: ir_blue_down
     lg:
@@ -583,7 +601,7 @@ binary_sensor:
             id: bed_head_ledstrip
             blue: !lambda |-
               float current = id(bed_head_ledstrip).remote_values.get_blue();
-              return clamp(current - 0.1, 0.0f, 1.0f);
+              return esphome::clamp(current - 0.1f, 0.0f, 1.0f);
   - platform: remote_receiver
     id: ir_auto
     lg:
