@@ -1,6 +1,7 @@
 - platform: mqtt
   unique_id: rf433_temp
   device_class: temperature
+  state_class: measurement
   state_topic: homie/rf-sockets-salon/temperature/degrees
   name: "RF 433 MHz - Temperature"
   unit_of_measurement: "°C"
@@ -21,6 +22,7 @@
 
 - platform: mqtt
   device_class: illuminance
+  state_class: measurement
   state_topic: homie/rf-sockets-salon/brightness/adc_1024
   name: "RF 433 MHz - luminosité"
   unit_of_measurement: "int10"

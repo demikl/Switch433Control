@@ -37,8 +37,8 @@
     platform: state
     to: playing
   condition:
-  - after: '20:00'
-    before: '5:00'
+  - after: '20:00:00'
+    before: 05:00:00
     condition: time
   - condition: time
     weekday:
@@ -54,6 +54,20 @@
   - data: {}
     entity_id: light.derriere_tele
     service: light.turn_off
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 2
+      milliseconds: 0
+  - type: turn_on
+    device_id: 71913aa7160911eb97c7454e377fb03a
+    entity_id: light.wled
+    domain: light
+  - device_id: 71913aa7160911eb97c7454e377fb03a
+    domain: select
+    entity_id: select.wled_preset
+    type: select_option
+    option: Halloween léger
 - id: '1587314310138'
   alias: Arbre violet fin de journée
   description: ''
@@ -67,11 +81,11 @@
     platform: numeric_state
   condition:
   - condition: device
-    device_id: cf90bd6ec1ef47a2aec0d78c3551befa
+    device_id: 719a799e69eac01bb01cdc6fd5d0fd37
     domain: device_tracker
-    entity_id: device_tracker.cph1893
+    entity_id: device_tracker.telephone_soso_honor_8x
     type: is_home
-  - after: '16:00'
+  - after: '16:00:00'
     condition: time
   action:
   - data: {}
@@ -210,6 +224,11 @@
     entity_id: light.wled
     domain: light
     brightness_pct: 100
+  - device_id: 71913aa7160911eb97c7454e377fb03a
+    domain: select
+    entity_id: select.wled_playlist
+    type: select_option
+    option: Halloween
   mode: single
 - id: '1603653251215'
   alias: eteindre Halloween
@@ -550,9 +569,10 @@
       sequence:
       - service: light.turn_on
         target:
-          device_id: 9a37f5bf1dfb4a269154141145453217
+          entity_id: light.fastled_spi_light
         data:
           color_name: red
+          brightness_pct: 100
     - conditions:
       - type: is_off
         condition: device
@@ -562,9 +582,13 @@
       sequence:
       - service: light.turn_on
         target:
-          device_id: 9a37f5bf1dfb4a269154141145453217
+          entity_id: light.fastled_spi_light
         data:
-          color_name: green
+          brightness_pct: 100
+          rgb_color:
+          - 0
+          - 255
+          - 0
     default: []
   - service: switch.turn_off
     target:
@@ -585,3 +609,39 @@
     target:
       entity_id: switch.flux
   mode: restart
+- id: '1635506024431'
+  alias: décos allumées le matin
+  description: ''
+  trigger:
+  - type: motion
+    platform: device
+    device_id: 9d786ae16f50d9f3a36c81040ea20da5
+    entity_id: binary_sensor.zb_pir_salon_ias_zone
+    domain: binary_sensor
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.rf_433_mhz_luminosite
+    below: '50'
+  - condition: device
+    type: is_off
+    device_id: 71913aa7160911eb97c7454e377fb03a
+    entity_id: light.wled
+    domain: light
+  - condition: time
+    after: 06:00:00
+    before: '11:00:00'
+  action:
+  - service: light.turn_on
+    target:
+      entity_id: light.arbre_violet
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 2
+      milliseconds: 0
+  - device_id: 71913aa7160911eb97c7454e377fb03a
+    domain: select
+    entity_id: select.wled_preset
+    type: select_option
+    option: Halloween léger
+  mode: single

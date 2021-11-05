@@ -2,15 +2,15 @@ alarm_control_panel:
   - platform: manual
     name: Home Alarm
     arming_time: 30
-    delay_time: 20
-    trigger_time: 10
+    delay_time: 30
+    trigger_time: 120
     disarmed:
       trigger_time: 0
     armed_home:
       arming_time: 0
       delay_time: 0
     armed_night:
-      delay_time: 10
+      delay_time: 60
 
 notify:
   - name: ALL_DEVICES
@@ -159,6 +159,11 @@ automation:
   - service: switch.turn_off
     target:
       entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
+  - delay:
+      seconds: 2
+  - service: switch.turn_off
+    target:
+      entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
 
 - alias: "Alarme - CTA notif telephone - allumer sirène"
   trigger:
@@ -292,6 +297,11 @@ automation:
     entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
     state: "on"
   action:
+    - service: switch.turn_off
+      target:
+        entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
+    - delay:
+        seconds: 2
     - service: switch.turn_off
       target:
         entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
