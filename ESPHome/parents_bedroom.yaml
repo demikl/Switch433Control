@@ -2,6 +2,12 @@
 substitutions:
   devicename: parents_bedroom
   upper_devicename: Chambre des parents
+  light_id_alarme: bed_head_ledstrip
+
+packages:
+  device_base: !include common/device_base.yaml
+  device_esp32: !include common/device_esp32.yaml
+  alarme: !include common/sensors_alarme.yaml
 
 esphome:
   name: ${devicename}
@@ -9,49 +15,11 @@ esphome:
   board: nodemcu-32s
 
 wifi:
-  networks:
-  - ssid: !secret sfr_wifi_ssid
-    password: !secret sfr_wifi_password
-    priority: 10
-  - ssid: !secret wifi_ssid
-    password: !secret wifi_password
-  #fast_connect: true
-
-  # Enable fallback hotspot (captive portal) in case wifi connection fails
-#  ap:
-#    ssid: ${upper_devicename} Hotspot
-#    password: "mBVIy9awG8vE"
-#
   manual_ip:
     # pour une connection rapide, et pour que le conteneur docker esphome puisse trouver l'ESP sans mDNS
     static_ip: 192.168.1.60
     gateway: 192.168.1.1
     subnet: 255.255.255.0
-
-# si pas de connexion WiFi, créer un hotspot wifi
-# captive_portal:
-
-# Enable logging
-logger:
-  level: INFO  ## minimum DEBUG obligatoire pour dumper les codes infrarouges recus, VERBOSE pour le multi-click
-  #level: DEBUG
-  #level: VERBOSE
-  #level: VERY_VERBOSE
-
-# Disable Home Assistant API and use MQTT instead, because we're using deep sleep
-api:
-
-ota:
-  password: !secret ota_password
-
-status_led:
-  pin:
-    number: GPIO1
-    inverted: true
-
-switch:
-  - platform: restart
-    name: "${upper_devicename} Reboot"
 
 i2c:
   sda: GPIO21
@@ -70,12 +38,6 @@ sensor:
 #      name: "Xiaomi Mi Scale Weight"
 #    impedance:
 #      name: "Xiaomi Mi Scale Impedance"
-
-  - platform: wifi_signal
-    name: "${upper_devicename} WiFi Signal Sensor"
-    update_interval: 600s
-  - platform: uptime
-    name: ${upper_devicename} Uptime Sensor
 
   - platform: bme280
     temperature:
@@ -114,6 +76,7 @@ light:
     name: "${upper_devicename} Eclairage tête de lit"
     id: bed_head_ledstrip
     effects:
+      - <<: !include common/light_effect_alarme.yaml
       - random
       - flicker
     on_turn_on:

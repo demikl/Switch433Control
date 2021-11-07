@@ -7,5 +7,7 @@
 **/lib/
 **/src/
 **/platformio.ini
-/secrets.yaml
+secrets.yaml
 */partitions.csv
+home-assistant/home-assistant-backup*
+home-assistant/config/zigbee.db

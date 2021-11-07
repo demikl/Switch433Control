@@ -1,0 +1,40 @@
+wifi:
+  networks:
+  - ssid: !secret sfr_wifi_ssid
+    password: !secret sfr_wifi_password
+    priority: 10
+  - ssid: !secret wifi_ssid
+    password: !secret wifi_password
+  #fast_connect: true
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+#  ap:
+#    ssid: ${upper_devicename} Hotspot
+#    password: "mBVIy9awG8vE"
+#
+
+# si pas de connexion WiFi, créer un hotspot wifi
+# captive_portal:
+
+# Enable logging
+logger:
+  level: INFO  ## minimum DEBUG obligatoire pour dumper les codes infrarouges recus, VERBOSE pour le multi-click
+  #level: DEBUG
+  #level: VERBOSE
+  #level: VERY_VERBOSE
+
+api:
+
+ota:
+  password: !secret ota_password
+
+switch:
+  - platform: restart
+    name: "${upper_devicename} Reboot"
+
+sensor:
+  - platform: wifi_signal
+    name: "${upper_devicename} WiFi Signal Sensor"
+    update_interval: 600s
+  - platform: uptime
+    name: ${upper_devicename} Uptime Sensor
