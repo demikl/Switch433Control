@@ -66,10 +66,19 @@ switch:
   - platform: flux
     lights:
     - light.fastled_spi_light
-    start_time: "7:00:00"
-    stop_time: "22:00:00"
+    #start_time: "7:00:00"
+    #stop_time: "22:00:00"
     start_colortemp: 4500
     brightness: 255
+    interval: 900
+
+  - platform: flux
+    lights:
+      - light.chambre_des_parents_prereglage_mick
+    #start_time: "8:00"
+    #stop_time: "21:00"
+    stop_colortemp: 1300
+    disable_brightness_adjust: true
     interval: 900
 
   - platform: mqtt
