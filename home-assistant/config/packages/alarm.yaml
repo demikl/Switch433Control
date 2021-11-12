@@ -212,6 +212,46 @@ automation:
     target:
       entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
 
+# Lumières
+- alias: 'Alarme - lumieres actives'
+  id: '20211112-alarm-lights-on'
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: "pending"
+  action:
+    - service: light.turn_on
+      entity_id:
+        - light.chambre_des_parents_eclairage_tete_de_lit
+        - light.fastled_spi_light
+      data:
+        effect: "Alarme via mouvement et ouverture"
+
+- alias: 'Alarme - lumieres normales'
+  id: '20211112-alarm-lights-off'
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      from: "triggered"
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      from: "pending"
+  condition:
+  - alias: "si on vient de pending, on exclue l'arrivee sur triggered"
+    condition: not
+    conditions:
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: "triggered"
+  action:
+    - service: light.turn_on
+      entity_id:
+        - light.chambre_des_parents_eclairage_tete_de_lit
+      data:
+        effect: "None"
+    - service: light.turn_off
+      entity_id:
+        - light.fastled_spi_light
 
 # Notifications
 - alias: 'Alarme - notif pending'
@@ -316,11 +356,11 @@ automation:
       platform: state
       entity_id: alarm_control_panel.home_alarm
       to: "disarmed"
-  condition:
-  - alias: "sirene active"
-    condition: state
-    entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
-    state: "on"
+#  condition:
+#  - alias: "sirene active"
+#    condition: state
+#    entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
+#    state: "on"
   action:
     - service: switch.turn_off
       target:
