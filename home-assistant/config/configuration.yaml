@@ -198,6 +198,9 @@ google_assistant:
   service_account: !include SERVICE_ACCOUNT.JSON
   report_state: true
   expose_by_default: true
+  exposed_domains:
+    - light
+    - groups
   secure_devices_pin: !secret google_assistant_secure_devices_pin
   entity_config:
     light.arbre_violet:
