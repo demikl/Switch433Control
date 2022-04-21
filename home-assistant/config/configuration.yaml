@@ -154,6 +154,7 @@ light:
       - light.marche_de_noel
       - light.sapin_de_noel
       - light.wled
+      - light.interrupteur_guirlande_exterieure_on_off
   
   - platform: template
     lights:
@@ -163,6 +164,8 @@ light:
           - service: switch.turn_on
             target:
               entity_id: switch.sw4
+          - delay:
+              seconds: 2
           - service: switch.turn_on
             target:
               entity_id: switch.sw1
@@ -182,6 +185,8 @@ light:
           default:
             - service: switch.turn_on
               entity_id: switch.sw4
+            - delay:
+                seconds: 2
             - service: switch.turn_on
               entity_id: switch.sw1
         value_template: "{{ is_state('switch.sw4', 'on') }}"

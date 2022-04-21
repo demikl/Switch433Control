@@ -75,12 +75,12 @@ automation:
 - alias: 'Alarm - Trigger while armed night'
   id: '20210804-alarm-trigger-while-armed-night'
   trigger:
-    - platform: state
-      entity_id: binary_sensor.zb_pir_buanderie_ias_zone
-      to: "on"
-    - platform: state
-      entity_id: binary_sensor.zb_pir_salon_ias_zone
-      to: "on"
+#    - platform: state
+#      entity_id: binary_sensor.zb_pir_buanderie_ias_zone
+#      to: "on"
+#    - platform: state
+#      entity_id: binary_sensor.zb_pir_salon_ias_zone
+#      to: "on"
     - platform: state
       entity_id: binary_sensor.porte_buanderie_garage_ias_zone
       to: "on"
@@ -169,14 +169,16 @@ automation:
       entity_id: binary_sensor.chambre_des_parents_bouton_cote_soso
       to: 'on'
   condition:
-    - alias: "alarme pré-déclenchée"
-      condition: state
-      entity_id: alarm_control_panel.home_alarm
-      state: "pending"
-    - alias: "alarme déclenchée"
-      condition: state
-      entity_id: alarm_control_panel.home_alarm
-      state: "triggered"
+    - condition: or
+      conditions:
+        - alias: "alarme pré-déclenchée"
+          condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: "pending"
+        - alias: "alarme déclenchée"
+          condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: "triggered"
   action:
   - service: alarm_control_panel.alarm_arm_night
     target:

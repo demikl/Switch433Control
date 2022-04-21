@@ -336,10 +336,6 @@
   condition: []
   action:
   - scene: scene.pre_minuit_nouvel_an
-  - service: wled.preset
-    data:
-      entity_id: all
-      preset: 1
   mode: single
 - id: '1609359633377'
   alias: nouvel an minuit
@@ -350,10 +346,6 @@
   condition: []
   action:
   - scene: scene.minuit_nouvel_an
-  - service: wled.preset
-    data:
-      entity_id: all
-      preset: 2
   mode: single
 - id: '1609359779239'
   alias: nouvel an apres minuit
@@ -363,11 +355,12 @@
     at: input_datetime.apres_minuit
   condition: []
   action:
-  - service: wled.preset
-    data:
-      entity_id: all
-      preset: 12
   - scene: scene.eclairages_noel
+  - device_id: 71913aa7160911eb97c7454e377fb03a
+    domain: select
+    entity_id: select.wled_preset
+    type: select_option
+    option: Princesse Maman rose
   mode: single
 - id: '1618470853529'
   alias: Lumiere bureau controlée par M5 Atom Lite
@@ -645,3 +638,75 @@
     type: select_option
     option: Halloween léger
   mode: single
+- id: '1639824788782'
+  alias: Guirlande extérieure - mouvement
+  description: ''
+  use_blueprint:
+    path: homeassistant/motion_light.yaml
+    input:
+      motion_entity: binary_sensor.lumi_lumi_sensor_motion_aq2_ias_zone
+      light_target:
+        entity_id: light.interrupteur_guirlande_exterieure_on_off
+      no_motion_wait: 120
+- alias: Décorations extérieures
+  id: 20211219-decorations-exterieures-001
+  trigger:
+  - id: morning
+    platform: time
+    at: 06:00:00
+  - id: low_luminosity
+    platform: numeric_state
+    entity_id: sensor.lumi_lumi_sensor_motion_aq2_035dd406_illuminance
+    below: 200
+  - id: high_luminosity
+    platform: numeric_state
+    entity_id: sensor.lumi_lumi_sensor_motion_aq2_035dd406_illuminance
+    above: 250
+  action:
+  - alias: ON or OFF
+    choose:
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: trigger
+          id: morning
+        - condition: trigger
+          id: low_luminosity
+      sequence:
+        service: light.turn_on
+        target:
+          entity_id: light.interrupteur_guirlande_exterieure_on_off
+    default:
+      service: light.turn_off
+      target:
+        entity_id: light.interrupteur_guirlande_exterieure_on_off
+- id: '1639932781742'
+  alias: interrupteur lumière extérieure éteint
+  description: ''
+  trigger:
+  - device_id: 3fad453fd3df1244e67af4dfe4558050
+    domain: zha
+    platform: device
+    type: device_offline
+    subtype: device_offline
+  condition:
+  - condition: time
+    after: 08:00:00
+    before: '23:00:00'
+  action:
+  - service: tts.watson_tts_say
+    data:
+      entity_id: media_player.nest_mini_gris
+      message: Merci de ne pas éteindre l'interrupteur de la lumière extérieure.
+  mode: single
+- id: '1643624140004'
+  alias: lumière extérieure entrée
+  description: ''
+  use_blueprint:
+    path: Danielbook/motion-illuminance.yaml
+    input:
+      motion_entity: binary_sensor.lumi_lumi_sensor_motion_aq2_ias_zone
+      lux_entity: sensor.lumi_lumi_sensor_motion_aq2_illuminance
+      light_target:
+        device_id: 3fad453fd3df1244e67af4dfe4558050
+      no_motion_wait: 300
