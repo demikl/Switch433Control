@@ -142,7 +142,7 @@ light:
     name: tipi Océane
     entity_id: switch.sw3
   - platform: switch
-    name: multiprise arbre violet
+    name: étoile Océane
     entity_id: switch.sw4
   - platform: switch
     name: sapin de Noel
@@ -151,51 +151,10 @@ light:
   - platform: group
     name: Décorations de Noël
     entities:
-      - light.marche_de_noel
       - light.sapin_de_noel
       - light.wled
       - light.interrupteur_guirlande_exterieure_on_off
   
-  - platform: template
-    lights:
-      marche_de_noel:
-        friendly_name: marché de Noël
-        turn_on:
-          - service: switch.turn_on
-            target:
-              entity_id: switch.sw4
-          - delay:
-              seconds: 2
-          - service: switch.turn_on
-            target:
-              entity_id: switch.sw1
-        turn_off:
-          service: switch.turn_off
-          target:
-            entity_id: switch.sw4
-        set_level:
-          choose:
-            - alias: "faible luminosité"
-              conditions: "{{ brightness / 255 * 100 <= 20 }}"
-              sequence:
-                - service: switch.turn_on
-                  entity_id: switch.sw4
-                - service: switch.turn_off
-                  entity_id: switch.sw1
-          default:
-            - service: switch.turn_on
-              entity_id: switch.sw4
-            - delay:
-                seconds: 2
-            - service: switch.turn_on
-              entity_id: switch.sw1
-        value_template: "{{ is_state('switch.sw4', 'on') }}"
-        level_template: |-
-          {% if is_state('switch.sw1', 'off') %}
-            20 / 100 * 255
-          {% else %}
-            255
-          {% endif %}
 
 google_assistant:
   project_id: domotic-146011
@@ -220,6 +179,10 @@ google_assistant:
         - le tipi d'Océane
         - la veilleuse d'Océane
         - la veilleuse dans la chambre d'Océane
+    light.etoile_oceane:
+      name: étoile d'Océane
+      aliases:
+        - le lit d'Océane
     light.decorations_de_noel:
       name: Décorations de Noël
 

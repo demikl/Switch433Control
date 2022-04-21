@@ -118,6 +118,7 @@
           - service: light.turn_on
             entity_id:
               - light.tipi_oceane
+              - light.etoile_oceane
       - conditions:
           condition: trigger
           id: switch_off
