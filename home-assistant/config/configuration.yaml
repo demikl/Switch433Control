@@ -6,8 +6,7 @@ default_config:
 http:
   use_x_forwarded_for: true
   trusted_proxies:
-    - 172.18.0.4
-    - 172.18.0.2
+    - 172.18.0.0/16
 
 homeassistant:
   external_url: https://demikl.hopto.org
@@ -21,6 +20,8 @@ homeassistant:
       hidden: true
   packages:
     alarm: !include packages/alarm.yaml
+    flights: !include packages/flight-tracker.yaml
+    mqtt_433: !include packages/mqtt-433.yaml
 
 # Text to speech
 tts:
@@ -64,6 +65,7 @@ mqtt:
 
 switch:
   - platform: flux
+    name: flux_bureau
     lights:
     - light.fastled_spi_light
     #start_time: "7:00:00"
@@ -73,6 +75,7 @@ switch:
     interval: 900
 
   - platform: flux
+    name: flux_chambre_parents
     lights:
       - light.chambre_des_parents_prereglage_mick
     #start_time: "8:00"
@@ -81,55 +84,13 @@ switch:
     disable_brightness_adjust: true
     interval: 900
 
-  - platform: mqtt
-    name: sw1
-    command_topic: "homie/rf-sockets-salon/switches_1/on/set"
-    state_topic: "homie/rf-sockets-salon/switches_1/on"
-    availability_topic: "homie/rf-sockets-salon/$state"
-    payload_on: "on"
-    payload_off: "off"
-    payload_available: "ready"
-    payload_not_available: "lost"
-
-  - platform: mqtt
-    name: sw2
-    command_topic: "homie/rf-sockets-salon/switches_2/on/set"
-    state_topic: "homie/rf-sockets-salon/switches_2/on"
-    availability_topic: "homie/rf-sockets-salon/$state"
-    payload_on: "on"
-    payload_off: "off"
-    payload_available: "ready"
-    payload_not_available: "lost"
-
-  - platform: mqtt
-    name: sw3
-    command_topic: "homie/rf-sockets-salon/switches_3/on/set"
-    state_topic: "homie/rf-sockets-salon/switches_3/on"
-    availability_topic: "homie/rf-sockets-salon/$state"
-    payload_on: "on"
-    payload_off: "off"
-    payload_available: "ready"
-    payload_not_available: "lost"
-
-  - platform: mqtt
-    name: sw4
-    command_topic: "homie/rf-sockets-salon/switches_4/on/set"
-    state_topic: "homie/rf-sockets-salon/switches_4/on"
-    availability_topic: "homie/rf-sockets-salon/$state"
-    payload_on: "on"
-    payload_off: "off"
-    payload_available: "ready"
-    payload_not_available: "lost"
-
-  - platform: mqtt
-    name: sw5
-    command_topic: "homie/rf-sockets-salon/switches_5/on/set"
-    state_topic: "homie/rf-sockets-salon/switches_5/on"
-    availability_topic: "homie/rf-sockets-salon/$state"
-    payload_on: "on"
-    payload_off: "off"
-    payload_available: "ready"
-    payload_not_available: "lost"
+  - platform: flux
+    name: flux_salon
+    lights:
+      - light.lumiere_salon_level_light_color_on_off
+    disable_brightness_adjust: false
+    interval: 300
+    mode: mired
 
 light:
   - platform: switch

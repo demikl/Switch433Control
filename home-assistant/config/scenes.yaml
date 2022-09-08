@@ -2,13 +2,44 @@
   name: Fin de film le soir
   entities:
     light.arbre_violet:
+      supported_color_modes:
+      - onoff
       friendly_name: arbre violet
-      state: 'on'
       supported_features: 0
+      color_mode: onoff
+      state: 'on'
     light.derriere_tele:
+      supported_color_modes:
+      - onoff
       friendly_name: derrière télé
-      state: 'on'
       supported_features: 0
+      color_mode: onoff
+      state: 'on'
+    light.lumiere_salon_level_light_color_on_off:
+      min_mireds: 153
+      max_mireds: 500
+      supported_color_modes:
+      - color_temp
+      - xy
+      off_with_transition: false
+      off_brightness:
+      friendly_name: Lumière salon level, light_color, on_off
+      supported_features: 40
+      color_mode: color_temp
+      brightness: 66
+      color_temp: 500
+      hs_color:
+      - 30.601
+      - 94.547
+      rgb_color:
+      - 255
+      - 136
+      - 13
+      xy_color:
+      - 0.599
+      - 0.382
+      state: 'on'
+  metadata: {}
 - id: '1608299040375'
   name: Eclairages Noel
   entities:

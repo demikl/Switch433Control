@@ -2,7 +2,7 @@ version: '3'
 services:
   homeassistant:
     container_name: home-assistant
-    image: ghcr.io/home-assistant/home-assistant:2022.6.7
+    image: ghcr.io/home-assistant/home-assistant:2022.9.0
     volumes:
       - ${HOME}/Switch433Control/home-assistant/config:/config
     environment:
@@ -19,7 +19,6 @@ services:
     image: eclipse-mosquitto:1.6
     command: ["/usr/sbin/mosquitto", "-c", "/mosquitto/config/mosquitto.conf"]
     network_mode: host
-    restart: always
     environment:
       - TZ=Europe/Paris
 
