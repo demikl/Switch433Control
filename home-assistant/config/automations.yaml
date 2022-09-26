@@ -13,7 +13,7 @@
   action:
   - scene: scene.fin_de_film_le_soir
 - id: '1587314026352'
-  alias: Allumer lumière tamisée quand plex devient inactif
+  alias: Plex - Allumer lumière tamisée quand plex devient inactif
   description: ''
   trigger:
   - entity_id: media_player.plex_plex_for_samsung_tv_ue55h6400
@@ -21,7 +21,7 @@
     platform: state
     to: idle
   condition:
-  - after: '21:00'
+  - after: '21:00:00'
     before: 05:00:00
     condition: time
   action:
@@ -33,12 +33,16 @@
     target:
       entity_id: light.derriere_tele
       device_id: 6cae04b64ffd7efa0a9c467a72a6547c
+  - service: switch.turn_off
+    data: {}
+    target:
+      entity_id: switch.flux_salon
 - id: '1587314207425'
-  alias: Eteindre lumière quand plex passe en lecture
+  alias: Plex - Eteindre lumière quand plex passe en lecture
   description: ''
   trigger:
-  - entity_id: media_player.plex_plex_for_samsung_tv_ue55h6400
-    from: idle
+  - entity_id:
+    - media_player.plex_plex_for_samsung_tv_ue55h6400
     platform: state
     to: playing
   condition:
@@ -53,6 +57,7 @@
     - fri
     - sun
     before: 00:00:00
+    after: 00:00:00
   action:
   - data: {}
     service: light.turn_off
@@ -310,17 +315,14 @@
   - service: tts.watson_tts_say
     entity_id: media_player.nest_mini_gris
     data:
-      message: |-
-        {{ [
-          "Eh oh ! Eh oh ! Y'a quelqu'un ? Je crois qu'une fenêtre est restée ouverte à l'étage !",
-          "Hum hum hum, il ferait pas un peu froid là haut ?",
-          "Gla gla gla ! Il y a un bonhomme de neige qui va emmenager dans la chambre là, non ?",
-          "Je sais pas pour vous, mais moi je commence à avoir froid avec la fenêtre ouverte",
-          "Ca vous dirait pas un bon feu de cheminée ? ....
-            Ah oui, zut, il n'y a pas de cheminée ici. Alors du coup, on pourrait
-            fermer la fenêtre, hein ?",
-          "Aie aie aie je n'avais pas prévu d'aller vivre au Pôle Nord !"
-        ] | random }}
+      message: "{{ [\n  \"Eh oh ! Eh oh ! Y'a quelqu'un ? Je crois qu'une fenêtre
+        est restée ouverte à l'étage !\",\n  \"Hum hum hum, il ferait pas un peu froid
+        là haut ?\",\n  \"Gla gla gla ! Il y a un bonhomme de neige qui va emmenager
+        dans la chambre là, non ?\",\n  \"Je sais pas pour vous, mais moi je commence
+        à avoir froid avec la fenêtre ouverte\",\n  \"Ca vous dirait pas un bon feu
+        de cheminée ? ....\n    Ah oui, zut, il n'y a pas de cheminée ici. Alors du
+        coup, on pourrait\n    fermer la fenêtre, hein ?\",\n  \"Aie aie aie je n'avais
+        pas prévu d'aller vivre au Pôle Nord !\"\n] | random }}"
   mode: restart
 - id: '1608478062291'
   alias: sapin de noel a l'ouverture des volets
@@ -555,9 +557,9 @@
   - platform: state
     attribute: state
     entity_id:
-      - sensor.k2ilfee_phbuo_y47gy_tv_series
-      - sensor.k2ilfee_id7gl_5rbyv_movies
-      - sensor.k2ilfee_seedbox_seedbox
+    - sensor.k2ilfee_phbuo_y47gy_tv_series
+    - sensor.k2ilfee_id7gl_5rbyv_movies
+    - sensor.k2ilfee_seedbox_seedbox
     to: syncing
     id: syncthing
   condition:
@@ -572,7 +574,7 @@
     entity_id: light.fastled_spi_light
     domain: light
   action:
-  - alias: "Choisir couleur suivant muted / onair"
+  - alias: Choisir couleur suivant muted / onair
     choose:
     - conditions:
       - type: is_on
@@ -601,38 +603,36 @@
           brightness_pct: 100
           color_name: lime
     default: []
-  - alias: "eviter que Flux change la couleur mute / onair"
+  - alias: eviter que Flux change la couleur mute / onair
     service: switch.turn_off
     target:
       entity_id: switch.flux_bureau
-  
-  - alias: "pause pour prise en compte de la nouvelle couleur avant l'éventuel flash"
+  - alias: pause pour prise en compte de la nouvelle couleur avant l'éventuel flash
     delay:
       seconds: 2
-  - alias: "tant que téléchargement syncthing en cours, prévenir avec un flash de couleur"
+  - alias: tant que téléchargement syncthing en cours, prévenir avec un flash de couleur
     repeat:
       while:
-        - condition: state
-          entity_id:
-            - sensor.k2ilfee_phbuo_y47gy_tv_series
-            - sensor.k2ilfee_id7gl_5rbyv_movies
-            - sensor.k2ilfee_seedbox_seedbox
-          match: any
-          state: syncing
-        - condition: state
-          entity_id: binary_sensor.in_meeting
-          state: "on"
-
+      - condition: state
+        entity_id:
+        - sensor.k2ilfee_phbuo_y47gy_tv_series
+        - sensor.k2ilfee_id7gl_5rbyv_movies
+        - sensor.k2ilfee_seedbox_seedbox
+        match: any
+        state: syncing
+      - condition: state
+        entity_id: binary_sensor.in_meeting
+        state: 'on'
       sequence:
-        - service: light.turn_on
-          data:
-            flash: short
-            color_name: fuchsia
-            brightness_pct: 100
-          target:
-            entity_id: light.fastled_spi_light
-        - delay:
-            seconds: 10
+      - service: light.turn_on
+        data:
+          flash: short
+          color_name: fuchsia
+          brightness_pct: 100
+        target:
+          entity_id: light.fastled_spi_light
+      - delay:
+          seconds: 10
   mode: restart
 - id: '1626075749909'
   alias: Teams - fin de réunion
@@ -650,7 +650,7 @@
       entity_id: switch.flux_bureau
   mode: restart
 - id: '1635506024431'
-  alias: décos allumées le matin
+  alias: Eclairage - salon si pénombre le matin et mouvement
   description: ''
   trigger:
   - type: motion
@@ -662,11 +662,6 @@
   - condition: numeric_state
     entity_id: sensor.rf_433_mhz_luminosite
     below: '50'
-  - condition: device
-    type: is_off
-    device_id: 71913aa7160911eb97c7454e377fb03a
-    entity_id: light.wled
-    domain: light
   - condition: time
     after: 06:00:00
     before: '11:00:00'
@@ -674,16 +669,27 @@
   - service: light.turn_on
     target:
       entity_id: light.arbre_violet
+    data: {}
+    enabled: false
   - delay:
       hours: 0
       minutes: 0
       seconds: 2
       milliseconds: 0
+    enabled: false
   - device_id: 71913aa7160911eb97c7454e377fb03a
     domain: select
     entity_id: select.wled_preset
     type: select_option
     option: Halloween léger
+  - service: switch.turn_on
+    data: {}
+    target:
+      entity_id: switch.flux_salon
+  - service: light.turn_on
+    data: {}
+    target:
+      device_id: 6cae04b64ffd7efa0a9c467a72a6547c
   mode: single
 - id: '1639824788782'
   alias: Guirlande extérieure - mouvement
@@ -757,3 +763,57 @@
       light_target:
         device_id: 3fad453fd3df1244e67af4dfe4558050
       no_motion_wait: 300
+- id: '1664207896320'
+  alias: Lumière salon séjour quand faible luminosité
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.rf_433_mhz_luminosite
+    for:
+      hours: 0
+      minutes: 15
+      seconds: 0
+    below: 200
+  condition:
+  - condition: time
+    before: '20:00:00'
+    after: 07:00:00
+  action:
+  - service: light.turn_on
+    data: {}
+    target:
+      area_id:
+      - d4708cf2e7724bca868901a2b0f311ea
+      - 6dc7af40a9a145df92a2c17985368dee
+  - service: switch.turn_on
+    data: {}
+    target:
+      entity_id: switch.flux_salon
+  mode: single
+- id: '1664208237569'
+  alias: Plex - lumiere veilleuse si pause
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - media_player.plex_plex_for_samsung_tv_ue55h6400
+    to: paused
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.rf_433_mhz_luminosite
+    below: 100
+  action:
+  - service: switch.turn_off
+    data: {}
+    target:
+      entity_id: switch.flux_salon
+  - service: light.turn_on
+    data:
+      rgb_color:
+      - 255
+      - 0
+      - 0
+      brightness: 4
+    target:
+      device_id: 6cae04b64ffd7efa0a9c467a72a6547c
+  mode: single

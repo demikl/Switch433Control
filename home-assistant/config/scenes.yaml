@@ -23,7 +23,7 @@
       - xy
       off_with_transition: false
       off_brightness:
-      friendly_name: Lumière salon level, light_color, on_off
+      friendly_name: Lumière salon
       supported_features: 40
       color_mode: color_temp
       brightness: 66
@@ -39,7 +39,12 @@
       - 0.599
       - 0.382
       state: 'on'
-  metadata: {}
+    switch.flux_salon:
+      friendly_name: flux_salon
+      state: 'off'
+  metadata:
+    switch.flux_salon:
+      entity_only: true
 - id: '1608299040375'
   name: Eclairages Noel
   entities:
