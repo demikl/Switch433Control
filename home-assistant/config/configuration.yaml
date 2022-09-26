@@ -73,6 +73,7 @@ switch:
     start_colortemp: 4500
     brightness: 255
     interval: 900
+    transition: 5
 
   - platform: flux
     name: flux_chambre_parents
@@ -88,9 +89,10 @@ switch:
     name: flux_salon
     lights:
       - light.lumiere_salon_level_light_color_on_off
-    disable_brightness_adjust: false
+    disable_brightness_adjust: true
     interval: 300
     mode: mired
+    transition: 1  # non supporté par l'ampoule zigbee
 
 light:
   - platform: switch
