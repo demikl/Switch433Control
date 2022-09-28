@@ -1,5 +1,5 @@
 - id: '1587313139256'
-  alias: Allumer lumière quand TV éteinte en fin de soirée
+  alias: Eclairage - Allumer lumière quand TV éteinte en fin de soirée
   description: ''
   trigger:
   - entity_id: media_player.samsung_ue55h6400
@@ -8,7 +8,7 @@
     to: 'off'
   condition:
   - after: '22:00'
-    before: '5:00'
+    before: 05:00:00
     condition: time
   action:
   - scene: scene.fin_de_film_le_soir
@@ -83,7 +83,7 @@
     type: select_option
     option: Halloween léger
 - id: '1587314310138'
-  alias: Arbre violet fin de journée
+  alias: Eclairage - Arbre violet fin de journée
   description: ''
   trigger:
   - below: '10'
@@ -101,6 +101,7 @@
     type: is_home
   - after: '16:00:00'
     condition: time
+    before: 00:00:00
   action:
   - data: {}
     entity_id: light.arbre_violet
@@ -152,7 +153,7 @@
     entity_id: switch.sw5
     service: switch.turn_off
 - id: '1588100804526'
-  alias: Allumer bureau quand ordinateur actif
+  alias: Eclairage - Allumer bureau quand ordinateur actif
   description: ''
   trigger:
   - entity_id: device_tracker.pc_portable_evtech
@@ -167,6 +168,7 @@
     type: is_off
   - after: '7:00'
     condition: time
+    before: 00:00:00
   action:
   - data:
       brightness: 255
@@ -224,7 +226,7 @@
       message: Au revoir la tablette d''Océane.
     service: tts.google_say
 - id: '1603653219112'
-  alias: allumer Halloween
+  alias: Eclairage - allumer Halloween
   description: ''
   trigger:
   - platform: state
@@ -245,7 +247,7 @@
     option: Halloween
   mode: single
 - id: '1603653251215'
-  alias: eteindre Halloween
+  alias: Eclairage - eteindre Halloween
   description: ''
   trigger:
   - platform: state
@@ -650,21 +652,34 @@
       entity_id: switch.flux_bureau
   mode: restart
 - id: '1635506024431'
-  alias: Eclairage - salon si pénombre le matin et mouvement
+  alias: Eclairage - salon si mouvement
   description: ''
   trigger:
   - type: motion
     platform: device
     device_id: 9d786ae16f50d9f3a36c81040ea20da5
-    entity_id: binary_sensor.zb_pir_salon_ias_zone
+    entity_id: binary_sensor.zb_pir_salon_e5154223_ias_zone
     domain: binary_sensor
   condition:
   - condition: numeric_state
     entity_id: sensor.rf_433_mhz_luminosite
-    below: '50'
-  - condition: time
-    after: 06:00:00
-    before: '11:00:00'
+    below: 350
+  - condition: or
+    conditions:
+    - condition: time
+      before: '11:00:00'
+      after: 06:00:00
+    - condition: time
+      before: '19:00:00'
+      after: '16:00:00'
+    - condition: and
+      conditions:
+      - condition: time
+        before: '21:00:00'
+        after: '19:00:00'
+      - condition: state
+        entity_id: media_player.tv_salon
+        state: unavailable
   action:
   - service: light.turn_on
     target:
@@ -687,10 +702,29 @@
     target:
       entity_id: switch.flux_salon
   - service: light.turn_on
-    data: {}
+    data:
+      brightness_pct: 100
     target:
       device_id: 6cae04b64ffd7efa0a9c467a72a6547c
-  mode: single
+  - alias: attendre fin de mouvement
+    wait_for_trigger:
+    - type: no_motion
+      platform: device
+      device_id: 9d786ae16f50d9f3a36c81040ea20da5
+      entity_id: binary_sensor.zb_pir_salon_e5154223_ias_zone
+      domain: binary_sensor
+    timeout:
+      hours: 2
+      minutes: 0
+      seconds: 0
+      milliseconds: 0
+  - delay:
+      minutes: 10
+  - service: light.turn_off
+    target:
+      device_id: 6cae04b64ffd7efa0a9c467a72a6547c
+    data: {}
+  mode: restart
 - id: '1639824788782'
   alias: Guirlande extérieure - mouvement
   description: ''
@@ -753,7 +787,7 @@
       message: Merci de ne pas éteindre l'interrupteur de la lumière extérieure.
   mode: single
 - id: '1643624140004'
-  alias: lumière extérieure entrée
+  alias: Eclairage - lumière extérieure entrée
   description: ''
   use_blueprint:
     path: Danielbook/motion-illuminance.yaml
@@ -764,7 +798,7 @@
         device_id: 3fad453fd3df1244e67af4dfe4558050
       no_motion_wait: 300
 - id: '1664207896320'
-  alias: Lumière salon séjour quand faible luminosité
+  alias: Eclairage - Lumière salon séjour quand faible luminosité
   description: ''
   trigger:
   - platform: numeric_state
@@ -802,6 +836,9 @@
   - condition: numeric_state
     entity_id: sensor.rf_433_mhz_luminosite
     below: 100
+  - condition: time
+    before: 03:00:00
+    after: '20:00:00'
   action:
   - service: switch.turn_off
     data: {}
@@ -813,7 +850,7 @@
       - 255
       - 0
       - 0
-      brightness: 4
+      brightness: 8
     target:
       device_id: 6cae04b64ffd7efa0a9c467a72a6547c
   mode: single

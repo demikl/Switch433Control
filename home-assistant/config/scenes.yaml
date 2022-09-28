@@ -11,9 +11,9 @@
     light.derriere_tele:
       supported_color_modes:
       - onoff
+      color_mode: onoff
       friendly_name: derrière télé
       supported_features: 0
-      color_mode: onoff
       state: 'on'
     light.lumiere_salon_level_light_color_on_off:
       min_mireds: 153
@@ -21,27 +21,26 @@
       supported_color_modes:
       - color_temp
       - xy
+      color_mode: xy
+      brightness: 133
+      hs_color:
+      - 269.72
+      - 83.922
+      rgb_color:
+      - 147
+      - 41
+      - 255
+      xy_color:
+      - 0.238
+      - 0.094
       off_with_transition: false
       off_brightness:
       friendly_name: Lumière salon
       supported_features: 40
-      color_mode: color_temp
-      brightness: 66
-      color_temp: 500
-      hs_color:
-      - 30.601
-      - 94.547
-      rgb_color:
-      - 255
-      - 136
-      - 13
-      xy_color:
-      - 0.599
-      - 0.382
       state: 'on'
     switch.flux_salon:
       friendly_name: flux_salon
-      state: 'off'
+      state: 'on'
   metadata:
     switch.flux_salon:
       entity_only: true
