@@ -2,7 +2,7 @@ version: '3'
 services:
   homeassistant:
     container_name: home-assistant
-    image: ghcr.io/home-assistant/home-assistant:2022.9.0
+    image: ghcr.io/home-assistant/home-assistant:2022.9
     volumes:
       - ${HOME}/Switch433Control/home-assistant/config:/config
     environment:
