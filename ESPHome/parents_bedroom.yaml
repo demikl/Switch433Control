@@ -11,7 +11,8 @@ packages:
 
 esphome:
   name: ${devicename}
-  platform: ESP32
+
+esp32:
   board: nodemcu-32s
 
 wifi:
@@ -25,7 +26,8 @@ i2c:
   sda: GPIO21
   scl: GPIO22
 
-#esp32_ble_tracker:
+esp32_ble_tracker:
+bluetooth_proxy:
 #
 #text_sensor:
 #  - platform: ble_scanner
