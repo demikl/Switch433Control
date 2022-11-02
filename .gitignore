@@ -11,11 +11,12 @@ SERVICE_ACCOUNT.JSON
 home-assistant/config/secrets.yaml
 home-assistant/config/home-assistant*
 home-assistant/home-assistant-backup*.tgz
+home-assistant/config/backups/
 home-assistant/config/.HA_VERSION
 home-assistant/config/.storage
 home-assistant/config/*.db
 home-assistant/config/*.db-shm
 home-assistant/config/*.db-wal
 home-assistant/config/tts
-home-assistant/config/custom_components/hacs
-home-assistant/config/custom_components/mass
+home-assistant/config/custom_components/
+home-assistant/config/www/community/
