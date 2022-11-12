@@ -1,0 +1,92 @@
+---
+substitutions:
+  devicename: rf433
+  upper_devicename: Emetteur recepteur 433MHz
+
+packages:
+  device_base: !include common/device_base.yaml
+  device_esp32: !include common/device_esp32.yaml
+  alarme: !include common/sensors_alarme.yaml
+
+esphome:
+  name: ${devicename}
+
+esp32:
+  board: nodemcu-32s
+
+wifi:
+  manual_ip:
+    # pour une connection rapide, et pour que le conteneur docker esphome puisse trouver l'ESP sans mDNS
+    static_ip: 192.168.1.156
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
+
+logger:
+  level: VERBOSE
+
+remote_receiver:
+  pin:
+    number: GPIO32
+  filter: 4us
+  idle: 4ms
+  tolerance: 60%
+
+remote_transmitter:
+ pin: GPIO33
+ carrier_duty_percent: 100%
+
+binary_sensor:
+  - platform: remote_receiver
+    name: SW1_ON
+    rc_switch_raw:
+      protocol: 7
+      code: "101011011101110111011100"
+  - platform: remote_receiver
+    name: SW1_OFF
+    rc_switch_raw:
+      protocol: 7
+      code: "101011011101110111010100"
+
+  - platform: remote_receiver
+    name: SW2_ON
+    rc_switch_raw:
+      protocol: 7
+      code: "101011011101110111011010"
+  - platform: remote_receiver
+    name: SW2_OFF
+    rc_switch_raw:
+      protocol: 7
+      code: "101011011101110111010010"
+
+  - platform: remote_receiver
+    name: SW3_ON
+    rc_switch_raw:
+      protocol: 7
+      code: "101011011101110111011001"
+  - platform: remote_receiver
+    name: SW3_OFF
+    rc_switch_raw:
+      protocol: 7
+      code: "101011011101110111010001"
+
+  - platform: remote_receiver
+    name: SW4_ON
+    rc_switch_raw:
+      protocol: 7
+      code: "101011011101110111011101"
+  - platform: remote_receiver
+    name: SW4_OFF
+    rc_switch_raw:
+      protocol: 7
+      code: "101011011101110111010101"
+
+  - platform: remote_receiver
+    name: SW5_ON
+    rc_switch_raw:
+      protocol: 7
+      code: "101011011101110111011011"
+  - platform: remote_receiver
+    name: SW5_OFF
+    rc_switch_raw:
+      protocol: 7
+      code: "101011011101110111010011"
