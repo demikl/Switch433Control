@@ -24,6 +24,7 @@ wifi:
 logger:
   level: VERBOSE
 
+
 remote_receiver:
   pin:
     number: GPIO32
@@ -94,6 +95,7 @@ switch:
   - platform: template
     name: SW1
     optimistic: true
+    assumed_state: true
     turn_on_action:
       - remote_transmitter.transmit_rc_switch_raw:
           code: *sw1on
@@ -109,6 +111,7 @@ switch:
   - platform: template
     name: SW2
     optimistic: true
+    assumed_state: true
     turn_on_action:
       - remote_transmitter.transmit_rc_switch_raw:
           code: *sw2on
@@ -122,6 +125,7 @@ switch:
   - platform: template
     name: SW3
     optimistic: true
+    assumed_state: true
     turn_on_action:
       - remote_transmitter.transmit_rc_switch_raw:
           code: *sw3on
@@ -135,6 +139,7 @@ switch:
   - platform: template
     name: SW4
     optimistic: true
+    assumed_state: true
     turn_on_action:
       - remote_transmitter.transmit_rc_switch_raw:
           code: *sw4on
@@ -148,6 +153,7 @@ switch:
   - platform: template
     name: SW5
     optimistic: true
+    assumed_state: true
     turn_on_action:
       - remote_transmitter.transmit_rc_switch_raw:
           code: *sw5on
