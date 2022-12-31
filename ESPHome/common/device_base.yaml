@@ -1,20 +1,17 @@
 wifi:
   networks:
-  - ssid: !secret sfr_wifi_ssid
-    password: !secret sfr_wifi_password
-    priority: 10
   - ssid: !secret wifi_ssid
     password: !secret wifi_password
   #fast_connect: true
 
   # Enable fallback hotspot (captive portal) in case wifi connection fails
-#  ap:
-#    ssid: ${upper_devicename} Hotspot
-#    password: "mBVIy9awG8vE"
-#
+  ap:
+    ssid: ${devicename} Hotspot
+    password: "Entrap4-Polish-Catcall"
+
 
 # si pas de connexion WiFi, créer un hotspot wifi
-# captive_portal:
+captive_portal:
 
 # Enable logging
 logger:

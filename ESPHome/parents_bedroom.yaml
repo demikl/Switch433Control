@@ -11,13 +11,14 @@ packages:
 
 esphome:
   name: ${devicename}
-  platform: ESP32
+
+esp32:
   board: nodemcu-32s
 
 wifi:
   manual_ip:
     # pour une connection rapide, et pour que le conteneur docker esphome puisse trouver l'ESP sans mDNS
-    static_ip: 192.168.1.60
+    static_ip: 192.168.1.201
     gateway: 192.168.1.1
     subnet: 255.255.255.0
 
@@ -25,7 +26,6 @@ i2c:
   sda: GPIO21
   scl: GPIO22
 
-#esp32_ble_tracker:
 #
 #text_sensor:
 #  - platform: ble_scanner

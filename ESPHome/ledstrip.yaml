@@ -10,12 +10,15 @@ packages:
 
 esphome:
   name: ${devicename}
-  platform: ESP8266
+
+esp8266:
   board: nodemcuv2
+  framework:
+    version: 2.7.4
 
 wifi:
   manual_ip:
-    static_ip: 192.168.1.65
+    static_ip: 192.168.1.200
     gateway: 192.168.1.1
     subnet: 255.255.255.0
 
@@ -28,6 +31,29 @@ logger:
 i2c:
   sda: D2
   scl: D1
+
+output:
+  - platform: esp8266_pwm
+    id: buzzer
+    pin: D5
+rtttl:
+  output: buzzer
+api:
+  services:
+    - service: play_rtttl
+      variables:
+        song_str: string
+      then:
+        - rtttl.play:
+            rtttl: !lambda 'return song_str;'
+#samsung_tone:d=2,o=6,b=255:
+#2a5,4d,4p,4d,4f#,4p,4f#,4p,2d.,16p
+#2a5,16p,4a5.,16p,
+#4a5,2e,8d,4c#,8b5,1a5,8p,
+#2a5,4d,4p,4d,4f#,4p,4f#,4p,2d.,16p
+#4a5,2d,16p,8d,4c#,16p,8c#,16p,2b5,2d,2g#5,1a5
+
+#mario-1-up:d=16,o=6,b=130: e5,g5,e,c,d,g
 
 sensor:
   - platform: bme280
