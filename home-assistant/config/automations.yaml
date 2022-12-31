@@ -99,7 +99,7 @@
     domain: device_tracker
     entity_id: device_tracker.telephone_soso_honor_8x
     type: is_home
-  - after: '16:00:00'
+  - after: '15:00:00'
     condition: time
     before: 00:00:00
   action:
@@ -110,6 +110,7 @@
     entity_id: automation.arbre_violet_fin_de_journee
     service: automation.turn_off
   - scene: scene.eclairages_noel
+    enabled: true
   mode: single
 - id: '1587316830884'
   alias: réactiver automatisme arbre violet soir
@@ -330,18 +331,33 @@
   alias: sapin de noel a l'ouverture des volets
   description: ''
   trigger:
-  - platform: numeric_state
-    entity_id: sensor.rf_433_mhz_luminosite
-    above: '20'
+  - type: motion
+    platform: device
+    device_id: 9d786ae16f50d9f3a36c81040ea20da5
+    entity_id: binary_sensor.zb_pir_salon_e5154223_ias_zone
+    domain: binary_sensor
+    alias: Mouvement dans le salon
   condition:
   - condition: time
-    after: 07:00
-    before: '11:00'
+    after: 06:00:00
+    before: '11:30:00'
+    alias: Le matin
   action:
   - service: light.turn_on
     data: {}
-    entity_id: light.wled
+    target:
+      entity_id: light.sapin_de_noel
   - scene: scene.eclairages_noel
+    enabled: false
+  - wait_for_trigger:
+    - platform: time
+      at: '14:00:00'
+    timeout:
+      hours: 12
+      minutes: 0
+      seconds: 0
+      milliseconds: 0
+    alias: Attendre que le matin soit fini pour ne pas redéclencher avant le lendemain
   mode: single
 - id: '1609359434691'
   alias: nouvel an pre minuit
@@ -645,7 +661,7 @@
   action:
   - service: adaptive_lighting.set_manual_control
     data:
-      entity_id: light.fastled_spi_light
+      entity_id: switch.adaptive_lighting_bureau
       manual_control: false
   mode: restart
 - id: '1635506024431'
@@ -660,7 +676,7 @@
   condition:
   - condition: numeric_state
     entity_id: sensor.rf_433_mhz_luminosite
-    below: 200
+    below: 150
   - condition: or
     conditions:
     - condition: time
@@ -716,7 +732,7 @@
         seconds: 0
     - platform: numeric_state
       entity_id: sensor.rf_433_mhz_luminosite
-      above: 400
+      above: 250
       for:
         hours: 0
         minutes: 3
@@ -746,20 +762,36 @@
       light_target:
         entity_id: light.interrupteur_guirlande_exterieure_on_off
       no_motion_wait: 120
-- alias: Décorations extérieures
-  id: 20211219-decorations-exterieures-001
+- id: 20211219-decorations-exterieures-001
+  alias: Décorations extérieures
   trigger:
   - id: morning
     platform: time
     at: 06:00:00
+    alias: Le matin
   - id: low_luminosity
     platform: numeric_state
     entity_id: sensor.lumi_lumi_sensor_motion_aq2_035dd406_illuminance
     below: 200
+    alias: Pénombre
+    enabled: false
   - id: high_luminosity
     platform: numeric_state
     entity_id: sensor.lumi_lumi_sensor_motion_aq2_035dd406_illuminance
     above: 250
+    alias: Trop de lumière
+  - platform: time
+    at: '17:00:00'
+    alias: Le soir
+    id: evening
+  - platform: time
+    at: '22:30:00'
+    alias: Extinction des lampadaires
+    id: lampadaires
+  - platform: time
+    at: 09:00:00
+    alias: Fin d'allumage le matin
+    id: fin-matin
   action:
   - alias: ON or OFF
     choose:
@@ -770,14 +802,18 @@
           id: morning
         - condition: trigger
           id: low_luminosity
+        - condition: trigger
+          id: evening
       sequence:
         service: light.turn_on
         target:
           entity_id: light.interrupteur_guirlande_exterieure_on_off
+        data: {}
     default:
       service: light.turn_off
       target:
         entity_id: light.interrupteur_guirlande_exterieure_on_off
+      data: {}
 - id: '1639932781742'
   alias: interrupteur lumière extérieure éteint
   description: ''
@@ -910,12 +946,26 @@
     device_id: 9a37f5bf1dfb4a269154141145453217
     entity_id: light.fastled_spi_light
     domain: light
+  - condition: not
+    conditions:
+    - condition: and
+      conditions:
+      - type: is_on
+        condition: device
+        device_id: 93f7c5c58a6176a5116bf82153292fd5
+        entity_id: binary_sensor.in_meeting
+        domain: binary_sensor
+      - type: is_off
+        condition: device
+        device_id: 93f7c5c58a6176a5116bf82153292fd5
+        entity_id: binary_sensor.muted
+        domain: binary_sensor
+    alias: En réunion avec micro ouvert
   action:
   - service: esphome.ledstrip_play_rtttl
     alias: 'sonnerie ; alternative : Tubular:d=8,o=5,b=180:e,a,e,b,e,g,a'
     data:
-      song_str: Imperial:d=4, o=5, b=100:e, e, e, 8c, 16p, 16g, e, 8c, 16p, 16g, e,
-        p, b, b, b, 8c6, 16p, 16g, d#, 8c, 16p, 16g, e, 8p
+      song_str: Coca cola:d=4,o=5,b=225:8f#6,8f#6,8f#6,8f#6,g6,8f#6,e6,8e6,8a6,f#6,d6,2p
   mode: single
 - id: '1666888345570'
   alias: ZHA - Tuya - TS004F Rotating Knob - Custom Actions
@@ -959,5 +1009,54 @@
   - service: tts.watson_tts_say
     data:
       entity_id: media_player.nest_mini_gris
-      message: La température dans le frigo est trop élevée, au dessus de 8°C !
+      message: aaaa a a a a a   aaaaa ! la température dans le frigo est trop chaude
+        ! ooooo oooo ooo o ! ô secours !
+  mode: single
+- id: '1669461821497'
+  alias: Tablette Lucas s'allume
+  description: ''
+  trigger:
+  - entity_id:
+    - device_tracker.tablette_lucas
+    from: not_home
+    platform: state
+    to: home
+  condition: []
+  action:
+  - service: tts.watson_tts_say
+    data:
+      entity_id: media_player.mass_nest_mini_gris
+      message: pppppppprrrroooooooooooooooooooooooooooooout ! Çaaaaaaaa puuuuuuuuuuuuuuuuue
+        !
+  mode: single
+- id: '1669703158339'
+  alias: Bonjour message vocal
+  description: ''
+  trigger:
+  - type: motion
+    platform: device
+    device_id: 9d786ae16f50d9f3a36c81040ea20da5
+    entity_id: binary_sensor.zb_pir_salon_e5154223_ias_zone
+    domain: binary_sensor
+  condition:
+  - condition: time
+    before: '10:00:00'
+    after: 07:05:00
+    weekday:
+    - tue
+  action:
+  - service: tts.watson_tts_say
+    data:
+      entity_id: media_player.nest_mini_gris
+      message: Bonjour ! Attention, le froid est arrivé. Il y a du givre sur la voiture.
+        Prévois du temps pour gratter le pare brise !
+  - wait_for_trigger:
+    - platform: time
+      at: 07:00:00
+      enabled: true
+    enabled: false
+  - service: automation.turn_off
+    data: {}
+    target:
+      entity_id: automation.bonjour_message_vocal
   mode: single

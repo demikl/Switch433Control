@@ -45,10 +45,6 @@ automation sonoff: !include automations/sonoff_t1_etage.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
 
-mqtt:
-    broker: 192.168.1.252
-    discovery: true
-
 #influxdb:
 #  host: 192.168.1.53
 #  include:
@@ -152,16 +148,19 @@ google_assistant:
 
 device_tracker:
   - platform: ping
+    scan_interval: 00:00:30
     hosts:
-      pc_portable_evtech: 192.168.1.41
+      pc_portable_evtech: L-5CD8130LSC.lan
       tv_salon: 192.168.1.31
-      tablette_raphael_old: 192.168.1.47
-      tablette_raphael_new: 192.168.1.30
-      tablette_oceane: 192.168.1.48
-      honor_8x: 192.168.1.23
+      tablette_raphael_old: storio-ancienne.lan
+      tablette_raphael_new: storio-raphael.lan
+      tablette_oceane: storio-oceane.lan
+      tablette_lucas: storio-lucas.lan
+      honor_8x: Honor8X.lan
+      oppo_rx17_neo: oppo-rx17-neo.lan
+      dodgee_f5: dodgee-f5.lan
       nintendo_wii: 192.168.31.141
       nintendo_switch: 192.168.1.49
-      wifi_ap: 192.168.1.45
 
 calendar:
   - platform: todoist
