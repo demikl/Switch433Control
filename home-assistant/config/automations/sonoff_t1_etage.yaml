@@ -50,20 +50,64 @@
           - service: switch.turn_on
             target:
                 entity_id: switch.tasmota2
-- alias: Sonoff T1 étage - contrôle lumière
+- alias: Sonoff T1 étage - extinction lumière
   id: '20210803_sonoff_t1_controle_lumiere'
   trigger:
-    - id: switch_on
-      platform: device
-      domain: switch
-      device_id: 221419aff5453dfe4851ae2f6d632142
-      entity_id: switch.tasmota2
-      type: turned_on
     - id: switch_off
       platform: device
       domain: switch
       device_id: 221419aff5453dfe4851ae2f6d632142
       entity_id: switch.tasmota2
+      type: turned_off
+  condition:
+    alias: "lumière allumée et on veut éteindre"
+    condition: and
+    conditions:
+      - condition: trigger
+        id: switch_off
+      - alias: "any light is ON"
+        condition: template
+        value_template: >
+          {% set domain = 'light' %}
+          {% set state = 'on' %}
+
+          {%- set keep = namespace(lights=[]) %}
+          {%- for l in states[domain] %}
+            {%- if 'prereglage' not in l.entity_id %}
+              {%- set keep.lights = keep.lights + [l] %}
+            {%- endif %}
+          {%- endfor %}
+          {%- set keep.lights = keep.lights | rejectattr('state', 'eq', 'unavailable') | list %}
+
+          {{ keep.lights | selectattr('state','eq', state) | list | count > 0 }}
+  action:
+    - choose:
+      - conditions:
+          condition: trigger
+          id: switch_off
+        sequence:
+          - service: light.turn_off
+            entity_id: all
+          # except virtual light that needs to stay ON to be driven by Flux
+          - service: light.turn_on
+            entity_id:
+              - light.chambre_des_parents_prereglage_mick
+              - light.chambre_des_parents_prereglage_soso
+
+- alias: Sonoff T1 étage - lumières Océane
+  id: '20221231_sonoff_t1_lumiere_oceane'
+  trigger:
+    - id: switch_on
+      platform: device
+      domain: switch
+      device_id: 221419aff5453dfe4851ae2f6d632142
+      entity_id: switch.tasmota3
+      type: turned_on
+    - id: switch_off
+      platform: device
+      domain: switch
+      device_id: 221419aff5453dfe4851ae2f6d632142
+      entity_id: switch.tasmota3
       type: turned_off
   condition:
     alias: "soit lumieres eteintes et on active le switch, soit lumieres allumées et on désactive le switch"
@@ -75,40 +119,27 @@
           - condition: trigger
             id: switch_on
           - alias: "lights are OFF"
-            condition: template
-            value_template: >
-              {% set domain = 'light' %}
-              {% set state = 'off' %}
-
-              {%- set keep = namespace(lights=[]) %}
-              {%- for l in states[domain] %}
-                {%- if 'prereglage' not in l.entity_id %}
-                  {%- set keep.lights = keep.lights + [l] %}
-                {%- endif %}
-              {%- endfor %}
-              {%- set keep.lights = keep.lights | rejectattr('state', 'eq', 'unavailable') | list %}
-
-              {{ keep.lights | count == keep.lights | selectattr('state','eq', state) | list | count }}
+            condition: state
+            entity_id:
+              - light.tipi_oceane
+              - light.etoile_oceane
+            state: 'off'
       - alias: "lumière allumée et on veut éteindre"
         condition: and
         conditions:
           - condition: trigger
             id: switch_off
           - alias: "any light is ON"
-            condition: template
-            value_template: >
-              {% set domain = 'light' %}
-              {% set state = 'on' %}
-
-              {%- set keep = namespace(lights=[]) %}
-              {%- for l in states[domain] %}
-                {%- if 'prereglage' not in l.entity_id %}
-                  {%- set keep.lights = keep.lights + [l] %}
-                {%- endif %}
-              {%- endfor %}
-              {%- set keep.lights = keep.lights | rejectattr('state', 'eq', 'unavailable') | list %}
-
-              {{ keep.lights | selectattr('state','eq', state) | list | count > 0 }}
+            condition: or
+            conditions:
+              - condition: state
+                entity_id:
+                  - light.tipi_oceane
+                state: 'on'
+              - condition: state
+                entity_id:
+                  - light.etoile_oceane
+                state: 'on'
   action:
     - choose:
       - conditions:
@@ -124,9 +155,6 @@
           id: switch_off
         sequence:
           - service: light.turn_off
-            entity_id: all
-          # except virtual light that needs to stay ON to be driven by Flux
-          - service: light.turn_on
             entity_id:
-              - light.chambre_des_parents_prereglage_mick
-              - light.chambre_des_parents_prereglage_soso
+              - light.tipi_oceane
+              - light.etoile_oceane
