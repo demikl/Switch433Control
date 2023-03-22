@@ -55,3 +55,24 @@ tablette_raphael_old:
   name: tablette_raphael_old
   picture:
   track: true
+
+oppo_rx17_neo:
+  name: oppo_rx17_neo
+  mac:
+  icon:
+  picture:
+  track: true
+
+tablette_lucas:
+  name: tablette_lucas
+  mac:
+  icon:
+  picture:
+  track: true
+
+dodgee_f5:
+  name: dodgee_f5
+  mac:
+  icon:
+  picture:
+  track: true

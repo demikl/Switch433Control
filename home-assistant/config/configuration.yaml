@@ -1,6 +1,7 @@
 
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
+#
 
 # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
 http:
@@ -9,15 +10,15 @@ http:
     - 172.18.0.0/16
 
 homeassistant:
-  external_url: https://demikl.hopto.org
-  internal_url: http://192.168.1.252:8123
-  customize:
-    switch.sw1:
-      hidden: true
-    switch.sw2:
-      hidden: true
-    switch.sw3:
-      hidden: true
+#   external_url: https://demikl.hopto.org
+#   internal_url: http://192.168.1.252:8123
+#   customize:
+#     switch.sw1:
+#       hidden: true
+#     switch.sw2:
+#       hidden: true
+#     switch.sw3:
+#       hidden: true
   packages:
     alarm: !include packages/alarm.yaml
     flights: !include packages/flight-tracker.yaml
@@ -150,7 +151,7 @@ device_tracker:
   - platform: ping
     scan_interval: 00:00:30
     hosts:
-      pc_portable_evtech: L-5CD8130LSC.lan
+      pc_portable_evtech: pc-portable-evtech.lan
       tv_salon: 192.168.1.31
       tablette_raphael_old: storio-ancienne.lan
       tablette_raphael_new: storio-raphael.lan

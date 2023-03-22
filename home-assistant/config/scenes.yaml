@@ -15,7 +15,7 @@
       friendly_name: derrière télé
       supported_features: 0
       state: 'on'
-    light.lumiere_salon_level_light_color_on_off:
+    light.lumiere_salon_light:
       min_mireds: 153
       max_mireds: 500
       supported_color_modes:
@@ -38,7 +38,7 @@
       friendly_name: Lumière salon
       supported_features: 40
       state: 'on'
-    switch.flux_salon:
+    switch.adaptive_lighting_salon:
       friendly_name: flux_salon
       state: 'on'
   metadata:

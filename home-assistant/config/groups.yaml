@@ -1,11 +1,11 @@
 temperatures:
   entities:
-    - sensor.rf433_temp
+    - sensor.rf_433_mhz_temperature
 
 batteries:
   entities:
-    - sensor.rf433_vcc
+    - sensor.rf_433_mhz_alim
 
 RF signals:
   entities:
-    - sensor.rf433_wifi
+    - sensor.rf_433_mhz_signal_wif

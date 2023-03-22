@@ -2,12 +2,16 @@ version: '3'
 services:
   homeassistant:
     container_name: home-assistant
-    image: ghcr.io/home-assistant/home-assistant:2022.10
+    image: ghcr.io/home-assistant/home-assistant:2023.3
     volumes:
       - ${HOME}/Switch433Control/home-assistant/config:/config
+    devices:
+      - /dev/ttyHASkyConnect:/dev/ttyUSB0
     environment:
       - TZ=Europe/Paris
     network_mode: host
+    ports:
+      - "8123:8123"
     restart: always
     depends_on: 
       - mqtt
@@ -61,7 +65,7 @@ services:
 
   esphome:
       container_name: esphome
-      image: esphome/esphome:2022.10
+      image: esphome/esphome:2022.12.8
       volumes:
         - ${HOME}/Switch433Control/ESPHome/:/config:rw
         # Use local time for logging timestamps
@@ -71,6 +75,7 @@ services:
   
   teleinfo2mqtt:
     image: fmartinou/teleinfo-mqtt
+    restart: always
     container_name: teleinfo2mqtt
     devices:
       - /dev/ttyTeleinfo:/dev/ttyUSB0             # Serial port device

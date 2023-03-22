@@ -110,7 +110,7 @@
     entity_id: automation.arbre_violet_fin_de_journee
     service: automation.turn_off
   - scene: scene.eclairages_noel
-    enabled: true
+    enabled: false
   mode: single
 - id: '1587316830884'
   alias: réactiver automatisme arbre violet soir
@@ -161,13 +161,18 @@
     from: not_home
     platform: state
     to: home
+    enabled: false
+  - platform: state
+    entity_id:
+    - sensor.l_5cd240dq9s_sessionstate_2
+    to: Unlocked
   condition:
   - condition: device
     device_id: 9a37f5bf1dfb4a269154141145453217
     domain: light
     entity_id: light.fastled_spi_light
     type: is_off
-  - after: '7:00'
+  - after: 07:00:00
     condition: time
     before: 00:00:00
   action:
@@ -185,6 +190,11 @@
     from: home
     platform: state
     to: not_home
+    enabled: false
+  - platform: state
+    entity_id:
+    - sensor.l_5cd240dq9s_sessionstate_2
+    from: Unlocked
   condition:
   - condition: device
     device_id: 9a37f5bf1dfb4a269154141145453217
@@ -210,7 +220,7 @@
       entity_id: media_player.nest_mini_gris
       language: fr
       message: Au revoir la tablette de Raphaël.
-    service: tts.google_say
+    service: tts.watson_tts_say
 - id: '1590500752548'
   alias: say "Au revoir la tablette de Océane" when tablette_oceane is away
   description: ''
@@ -225,7 +235,7 @@
       entity_id: media_player.nest_mini_gris
       language: fr
       message: Au revoir la tablette d''Océane.
-    service: tts.google_say
+    service: tts.watson_tts_say
 - id: '1603653219112'
   alias: Eclairage - allumer Halloween
   description: ''
@@ -334,7 +344,7 @@
   - type: motion
     platform: device
     device_id: 9d786ae16f50d9f3a36c81040ea20da5
-    entity_id: binary_sensor.zb_pir_salon_e5154223_ias_zone
+    entity_id: binary_sensor.zb_pir_salon_iaszone
     domain: binary_sensor
     alias: Mouvement dans le salon
   condition:
@@ -393,47 +403,6 @@
     entity_id: select.wled_preset
     type: select_option
     option: Princesse Maman rose
-  mode: single
-- id: '1618470853529'
-  alias: Lumiere bureau controlée par M5 Atom Lite
-  description: ''
-  trigger:
-  - type: turned_on
-    platform: device
-    device_id: 42d3a0a925565d9371340e8d68432628
-    entity_id: binary_sensor.chambre_de_raphael_button
-    domain: binary_sensor
-  condition: []
-  action:
-  - type: toggle
-    device_id: 9a37f5bf1dfb4a269154141145453217
-    entity_id: light.fastled_spi_light
-    domain: light
-  mode: single
-- id: '1620812375239'
-  alias: serre trop chaude
-  description: ''
-  trigger:
-  - platform: numeric_state
-    entity_id: sensor.ewelink_th01_02_temperature
-    above: '30'
-    for: 0:10:00
-  condition: []
-  action:
-  - service: media_player.volume_set
-    target:
-      device_id: f953932621e341679b036fe8c96db07b
-    data:
-      volume_level: 1
-  - service: tts.watson_tts_say
-    data:
-      entity_id: media_player.nest_mini_gris
-      message: Ouh là là ! Il fait vraiment très chaud dans la serre.
-  - device_id: cf90bd6ec1ef47a2aec0d78c3551befa
-    domain: mobile_app
-    type: notify
-    title: Serre
-    message: Trop chaud dans la serre !
   mode: single
 - id: '1621094605604'
   alias: Porte buanderie garage restée ouverte
@@ -671,7 +640,7 @@
   - type: motion
     platform: device
     device_id: 9d786ae16f50d9f3a36c81040ea20da5
-    entity_id: binary_sensor.zb_pir_salon_e5154223_ias_zone
+    entity_id: binary_sensor.zb_pir_salon_iaszone
     domain: binary_sensor
   condition:
   - condition: numeric_state
@@ -724,7 +693,7 @@
     - type: no_motion
       platform: device
       device_id: 9d786ae16f50d9f3a36c81040ea20da5
-      entity_id: binary_sensor.zb_pir_salon_e5154223_ias_zone
+      entity_id: binary_sensor.zb_pir_salon_iaszone
       domain: binary_sensor
       for:
         hours: 0
@@ -732,7 +701,7 @@
         seconds: 0
     - platform: numeric_state
       entity_id: sensor.rf_433_mhz_luminosite
-      above: 250
+      above: 320
       for:
         hours: 0
         minutes: 3
@@ -763,7 +732,8 @@
         entity_id: light.interrupteur_guirlande_exterieure_on_off
       no_motion_wait: 120
 - id: 20211219-decorations-exterieures-001
-  alias: Décorations extérieures
+  alias: Eclairage - Décorations extérieures
+  description: ''
   trigger:
   - id: morning
     platform: time
@@ -805,15 +775,23 @@
         - condition: trigger
           id: evening
       sequence:
-        service: light.turn_on
+      - service: light.turn_on
         target:
           entity_id: light.interrupteur_guirlande_exterieure_on_off
         data: {}
+      - service: automation.turn_off
+        data: {}
+        target:
+          entity_id: automation.lumiere_exterieure_entree
     default:
-      service: light.turn_off
+    - service: light.turn_off
       target:
         entity_id: light.interrupteur_guirlande_exterieure_on_off
       data: {}
+    - service: automation.turn_on
+      data: {}
+      target:
+        entity_id: automation.lumiere_exterieure_entree
 - id: '1639932781742'
   alias: interrupteur lumière extérieure éteint
   description: ''
@@ -974,44 +952,15 @@
     path: tuya/tuya-TS004F-knob.yaml
     input:
       mode: parallel
-      remote: decf30e88264ea8446002086553cfee1
-      light:
-        entity_id: light.lumiere_salon_level_light_color_on_off
+      remote: 192f2b2653aa9c386c67ab68b5e97ba4
       toggle:
       - type: toggle
         device_id: 6cae04b64ffd7efa0a9c467a72a6547c
-        entity_id: light.lumiere_salon_level_light_color_on_off
+        entity_id: light.lumiere_salon_light
         domain: light
       max: 4
-- id: '1666947373537'
-  alias: Frigo trop chaud
-  description: ''
-  trigger:
-  - type: temperature
-    platform: device
-    device_id: 5d9717f7a50bb145fa28db90387e6908
-    entity_id: sensor.frigo_temperature
-    domain: sensor
-    above: 8
-    for:
-      hours: 0
-      minutes: 10
-      seconds: 0
-  condition:
-  - condition: time
-    before: '23:00:00'
-    after: 07:00:00
-  action:
-  - service: notify.all_devices
-    data:
-      title: Frigo trop chaud !
-      message: La température dans le frigo dépasse 8°C.
-  - service: tts.watson_tts_say
-    data:
-      entity_id: media_player.nest_mini_gris
-      message: aaaa a a a a a   aaaaa ! la température dans le frigo est trop chaude
-        ! ooooo oooo ooo o ! ô secours !
-  mode: single
+      light:
+        device_id: 6cae04b64ffd7efa0a9c467a72a6547c
 - id: '1669461821497'
   alias: Tablette Lucas s'allume
   description: ''
@@ -1036,7 +985,7 @@
   - type: motion
     platform: device
     device_id: 9d786ae16f50d9f3a36c81040ea20da5
-    entity_id: binary_sensor.zb_pir_salon_e5154223_ias_zone
+    entity_id: binary_sensor.zb_pir_salon_iaszone
     domain: binary_sensor
   condition:
   - condition: time
@@ -1059,4 +1008,61 @@
     data: {}
     target:
       entity_id: automation.bonjour_message_vocal
+  mode: single
+- id: '1674908268685'
+  alias: Syncthing - erreur de synchronisation
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.k2ilfee_phbuo_y47gy_tv_series
+    for:
+      hours: 0
+      minutes: 15
+      seconds: 0
+    attribute: pull_errors
+    above: 1
+    id: error
+  - platform: numeric_state
+    entity_id: sensor.k2ilfee_id7gl_5rbyv_movies
+    for:
+      hours: 0
+      minutes: 15
+      seconds: 0
+    attribute: pull_errors
+    above: 1
+    id: error
+  - platform: numeric_state
+    entity_id: sensor.k2ilfee_phbuo_y47gy_tv_series
+    for:
+      hours: 0
+      minutes: 15
+      seconds: 0
+    attribute: pull_errors
+    below: 1
+    id: ok
+  - platform: numeric_state
+    entity_id: sensor.k2ilfee_id7gl_5rbyv_movies
+    attribute: pull_errors
+    below: 1
+    id: ok
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: error
+      sequence:
+      - service: notify.mobile_app_honor_8x
+        data:
+          message: Il manque de la place pour récupérer tous les films et séries en
+            attente.
+          title: Synchro Plex
+    - conditions:
+      - condition: trigger
+        id: ok
+      sequence:
+      - service: notify.mobile_app_honor_8x
+        data:
+          title: Synchro Plex
+          message: Erreurs de synchronisation résolues, tout va bien !
   mode: single
