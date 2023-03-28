@@ -8,6 +8,8 @@ http:
   use_x_forwarded_for: true
   trusted_proxies:
     - 172.18.0.0/16
+  ip_ban_enabled: true
+  login_attempts_threshold: 5
 
 homeassistant:
 #   external_url: https://demikl.hopto.org
