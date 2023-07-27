@@ -21,10 +21,14 @@
     platform: state
     to: idle
   condition:
-  - after: '21:00:00'
+  - after: '20:00:00'
     before: 05:00:00
     condition: time
   action:
+  - service: adaptive_lighting.set_manual_control
+    data:
+      manual_control: true
+      entity_id: switch.adaptive_lighting_adapt_brightness_salon
   - data:
       color_temp: 500
       brightness: 46
@@ -33,10 +37,6 @@
     target:
       entity_id: light.derriere_tele
       device_id: 6cae04b64ffd7efa0a9c467a72a6547c
-  - service: switch.turn_off
-    data: {}
-    target:
-      entity_id: switch.flux_salon
 - id: '1587314207425'
   alias: Plex - Eteindre lumière quand plex passe en lecture
   description: ''
@@ -817,11 +817,11 @@
   use_blueprint:
     path: Danielbook/motion-illuminance.yaml
     input:
-      motion_entity: binary_sensor.lumi_lumi_sensor_motion_aq2_ias_zone
       lux_entity: sensor.lumi_lumi_sensor_motion_aq2_illuminance
       light_target:
         device_id: 3fad453fd3df1244e67af4dfe4558050
       no_motion_wait: 300
+      motion_entity: binary_sensor.lumi_lumi_sensor_motion_aq2_iaszone
 - id: '1664207896320'
   alias: Eclairage - Lumière salon séjour quand faible luminosité
   description: ''
@@ -865,10 +865,10 @@
     before: 03:00:00
     after: '20:00:00'
   action:
-  - service: switch.turn_off
-    data: {}
-    target:
-      entity_id: switch.flux_salon
+  - service: adaptive_lighting.set_manual_control
+    data:
+      manual_control: true
+      entity_id: switch.adaptive_lighting_adapt_brightness_salon
   - service: light.turn_on
     data:
       rgb_color:
@@ -961,6 +961,19 @@
       max: 4
       light:
         device_id: 6cae04b64ffd7efa0a9c467a72a6547c
+      rotate_left:
+      - service: light.turn_on
+        data:
+          color_name: blue
+          brightness_pct: 100
+          flash: short
+        target:
+          device_id: 6cae04b64ffd7efa0a9c467a72a6547c
+      press_short:
+      - service: light.toggle
+        data: {}
+        target:
+          device_id: 6cae04b64ffd7efa0a9c467a72a6547c
 - id: '1669461821497'
   alias: Tablette Lucas s'allume
   description: ''
