@@ -22,4 +22,3 @@ home-assistant/config/tts
 home-assistant/config/custom_components/
 home-assistant/config/www/community/
 home-assistant/config/image
-home-assistant/config/watchman_report.txt

@@ -1,0 +1,37 @@
+-== Watchman Report ==- 
+
+-== Congratulations, all 21 services from your config are available!
+
+-== Missing 16 entity(ies) from 78 found in your config:
++--------------------------------+---------+--------------------------------------------------------------+
+| Entity ID                      | State   | Location                                                     |
++--------------------------------+---------+--------------------------------------------------------------+
+| light.wled                     | unavail | scenes.yaml:63,365,396,412                                   |
+| select.wled_preset             | unavail | scenes.yaml:398,414                                          |
+| media_player.plex_plex_for_sam | unavail | automations.yaml:20,46,722                                   |
+| sung_tv_ue55h6400              |         |                                                              |
+| sensor.la_bruffiere_next_rain  | unknown | automations.yaml:95                                          |
+| sensor.l_5cd240dq9s_sessionsta | unavail | automations.yaml:168,197                                     |
+| te_2                           |         |                                                              |
+| select.wled_playlist           | unavail | automations.yaml:257                                         |
+| binary_sensor.chambre_parents_ | unknown | automations.yaml:301,320                                     |
+| temp_falling_short             |         |                                                              |
+| binary_sensor.chambre_parents_ | unknown | automations.yaml:316                                         |
+| temp_rising_short              |         |                                                              |
+| binary_sensor.porte_buanderie_ | unavail | automations.yaml:415                                         |
+| garage_iaszone                 |         |                                                              |
+| binary_sensor.in_meeting       | unavail | automations.yaml:437,461,512,532,798                         |
+| binary_sensor.muted            | unavail | automations.yaml:442,447,475,488,803                         |
+| media_player.tv_salon          | unavail | automations.yaml:568                                         |
+| media_player.mass_nest_mini_gr | unavail | automations.yaml:854                                         |
+| is                             |         |                                                              |
+| binary_sensor.porte_fenetre_bu | unavail | packages/alarm.yaml:58,76                                    |
+| anderie_iaszone                |         |                                                              |
+| binary_sensor.porte_dentree_ia | unavail | packages/alarm.yaml:59,77                                    |
+| szone                          |         |                                                              |
+| light.entity_id                | missing | blueprints/automation/tuya/tuya-TS004F-knob.yaml:165,181,199 |
++--------------------------------+---------+--------------------------------------------------------------+
+
+-== Report created on 27 Jul 2023 10:22:20
+-== Parsed 22 files in 0.09s., ignored 0 files 
+-== Generated in: 0.00s. Validated in: 0.00s.
