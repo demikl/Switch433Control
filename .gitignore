@@ -21,5 +21,5 @@ home-assistant/config/*.db.old
 home-assistant/config/tts
 home-assistant/config/custom_components/
 home-assistant/config/www/community/
-home-assistant/config/images
-home-assistant/watchman_report.txt
+home-assistant/config/image
+home-assistant/config/watchman_report.txt
