@@ -52,16 +52,11 @@ automation:
   id: '20210804-alarm-trigger-while-armed-away'
   trigger:
     - platform: state
-      entity_id: binary_sensor.chambre_des_parents_pir_sensor
-      to: "on"
-    - platform: state
-      entity_id: binary_sensor.porte_buanderie_garage_ias_zone
-      to: "on"
-    - platform: state
-      entity_id: binary_sensor.porte_dentree_ias_zone
-      to: "on"
-    - platform: state
-      entity_id: binary_sensor.porte_fenetre_buanderie_terrasse_ias_zone
+      entity_id:
+        - binary_sensor.chambre_des_parents_pir_sensor
+        - binary_sensor.porte_buanderie_garage_iaszone
+        - binary_sensor.porte_fenetre_buanderie_iaszone
+        - binary_sensor.porte_dentree_iaszone
       to: "on"
   condition:
     - condition: state
@@ -75,20 +70,11 @@ automation:
 - alias: 'Alarm - Trigger while armed night'
   id: '20210804-alarm-trigger-while-armed-night'
   trigger:
-#    - platform: state
-#      entity_id: binary_sensor.zb_pir_buanderie_ias_zone
-#      to: "on"
-#    - platform: state
-#      entity_id: binary_sensor.zb_pir_salon_ias_zone
-#      to: "on"
     - platform: state
-      entity_id: binary_sensor.porte_buanderie_garage_ias_zone
-      to: "on"
-    - platform: state
-      entity_id: binary_sensor.porte_dentree_ias_zone
-      to: "on"
-    - platform: state
-      entity_id: binary_sensor.porte_fenetre_buanderie_terrasse_ias_zone
+      entity_id:
+        - binary_sensor.porte_buanderie_garage_iaszone
+        - binary_sensor.porte_fenetre_buanderie_iaszone
+        - binary_sensor.porte_dentree_iaszone
       to: "on"
   condition:
     - condition: state
@@ -163,10 +149,9 @@ automation:
   id: '20210804-alarm-acquittement'
   trigger:
     - platform: state
-      entity_id: binary_sensor.chambre_des_parents_bouton_cote_mick
-      to: 'on'
-    - platform: state
-      entity_id: binary_sensor.chambre_des_parents_bouton_cote_soso
+      entity_id:
+        - binary_sensor.chambre_des_parents_bouton_cote_mick
+        - binary_sensor.chambre_des_parents_bouton_cote_soso
       to: 'on'
   condition:
     - condition: or
@@ -185,12 +170,12 @@ automation:
       entity_id: alarm_control_panel.home_alarm
   - service: switch.turn_off
     target:
-      entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
+      entity_id: switch.sirene_alarme_switch
   - delay:
       seconds: 2
   - service: switch.turn_off
     target:
-      entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
+      entity_id: switch.sirene_alarme_switch
 
 - alias: "Alarme - CTA notif telephone - allumer sirène"
   trigger:
@@ -201,7 +186,7 @@ automation:
   action:
     service: switch.turn_on
     target:
-      entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
+      entity_id: switch.sirene_alarme_switch
 
 - alias: "Alarme - CTA notif telephone - silence sirène"
   trigger:
@@ -212,7 +197,7 @@ automation:
   action:
     service: switch.turn_off
     target:
-      entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
+      entity_id: switch.sirene_alarme_switch
 
 # Lumières
 - alias: 'Alarme - lumieres actives'
@@ -361,17 +346,17 @@ automation:
 #  condition:
 #  - alias: "sirene active"
 #    condition: state
-#    entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
+#    entity_id: switch.sirene_alarme_switch
 #    state: "on"
   action:
     - service: switch.turn_off
       target:
-        entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
+        entity_id: switch.sirene_alarme_switch
     - delay:
         seconds: 2
     - service: switch.turn_off
       target:
-        entity_id: switch.tze200_d0yu2xgi_ts0601_on_off
+        entity_id: switch.sirene_alarme_switch
 
 script:
   arm_alarm_away:
