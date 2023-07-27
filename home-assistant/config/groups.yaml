@@ -2,10 +2,6 @@ temperatures:
   entities:
     - sensor.rf_433_mhz_temperature
 
-batteries:
-  entities:
-    - sensor.rf_433_mhz_alim
-
 RF signals:
   entities:
-    - sensor.rf_433_mhz_signal_wif
+    - sensor.rf_433_mhz_signal_wifi

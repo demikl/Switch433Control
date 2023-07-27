@@ -16,7 +16,8 @@
   alias: Plex - Allumer lumière tamisée quand plex devient inactif
   description: ''
   trigger:
-  - entity_id: media_player.plex_plex_for_samsung_tv_ue55h6400
+  - entity_id:
+    - media_player.plex_plex_for_samsung_tv_ue55h6400
     from: playing
     platform: state
     to: idle
@@ -411,7 +412,7 @@
   - type: opened
     platform: device
     device_id: 5a0b702e15439bf746789259206e457c
-    entity_id: binary_sensor.porte_buanderie_garage_ias_zone
+    entity_id: binary_sensor.porte_buanderie_garage_iaszone
     domain: binary_sensor
     for:
       hours: 0
@@ -425,102 +426,6 @@
       entity_id: media_player.nest_mini_gris
       message: Attention ! La porte d'accès au garage depuis la buanderie est restée
         ouverte.
-  mode: single
-- id: '1622968753443'
-  alias: Sonnette quand porte d'entrée ouverte
-  description: ''
-  trigger:
-  - type: opened
-    platform: device
-    device_id: 804b50c855c117bb0d13e425f5967fd4
-    entity_id: binary_sensor.porte_dentree_ias_zone
-    domain: binary_sensor
-  condition: []
-  action:
-  - scene: scene.e5pbi5mev9hkaya3
-  mode: restart
-- id: '1622969147788'
-  alias: Alarme nocturne
-  description: ''
-  trigger:
-  - type: opened
-    platform: device
-    device_id: 5a0b702e15439bf746789259206e457c
-    entity_id: binary_sensor.porte_buanderie_garage_ias_zone
-    domain: binary_sensor
-  - type: opened
-    platform: device
-    device_id: 804b50c855c117bb0d13e425f5967fd4
-    entity_id: binary_sensor.porte_dentree_ias_zone
-    domain: binary_sensor
-  - type: opened
-    platform: device
-    device_id: 624822e6f15082d65b141a4b10afcb5f
-    entity_id: binary_sensor.porte_fenetre_buanderie_terrasse_ias_zone
-    domain: binary_sensor
-  - type: motion
-    platform: device
-    device_id: 9d786ae16f50d9f3a36c81040ea20da5
-    entity_id: binary_sensor.ewelink_ms01_01_ias_zone
-    domain: binary_sensor
-  - type: motion
-    platform: device
-    device_id: 33c0fe37b7698e83156299060586032c
-    entity_id: binary_sensor.ewelink_ms01_02_ias_zone
-    domain: binary_sensor
-  condition:
-  - condition: time
-    after: '1:00:00'
-    before: '7:00:00'
-  action:
-  - scene: scene.magthfzosyajtzm4
-  - service: light.turn_on
-    target:
-      device_id: 1a37bbd9d8b645b992befc6b99c9882d
-    data:
-      brightness_pct: 100
-      rgb_color:
-      - 255
-      - 0
-      - 0
-      flash: long
-  mode: single
-- id: '1622970087240'
-  alias: Désactiver alarme si bouton lit
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: binary_sensor.chambre_des_parents_bouton_cote_mick
-    from: 'off'
-    to: 'on'
-  - platform: state
-    entity_id: binary_sensor.chambre_des_parents_bouton_cote_soso
-    from: 'off'
-    to: 'on'
-  condition: []
-  action:
-  - scene: scene.awsxgl8obri7akqa
-  - service: automation.turn_off
-    target:
-      entity_id: automation.alarme_nocturne
-  - service: light.turn_on
-    target:
-      entity_id:
-      - light.arbre_violet
-      - light.derriere_tele
-  - delay:
-      hours: 0
-      minutes: 15
-      seconds: 0
-      milliseconds: 0
-  - service: automation.turn_on
-    target:
-      entity_id: automation.alarme_nocturne
-  - service: light.turn_off
-    target:
-      entity_id:
-      - light.derriere_tele
-      - light.arbre_violet
   mode: single
 - id: '1626075685464'
   alias: Teams - en réunion
@@ -662,27 +567,13 @@
       - condition: state
         entity_id: media_player.tv_salon
         state: unavailable
+    alias: verif horaires et activités
   action:
-  - service: light.turn_on
-    target:
-      entity_id: light.arbre_violet
-    data: {}
-    enabled: false
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 2
-      milliseconds: 0
-    enabled: false
   - device_id: 71913aa7160911eb97c7454e377fb03a
     domain: select
     entity_id: select.wled_preset
     type: select_option
     option: Halloween léger
-  - service: switch.turn_on
-    data: {}
-    target:
-      entity_id: switch.flux_salon
   - service: light.turn_on
     data:
       brightness_pct: 100
@@ -709,7 +600,7 @@
     - platform: device
       type: turned_off
       device_id: 6cae04b64ffd7efa0a9c467a72a6547c
-      entity_id: light.lumiere_salon_level_light_color_on_off
+      entity_id: light.lumiere_salon_light
       domain: light
     timeout:
       hours: 6
@@ -727,9 +618,9 @@
   use_blueprint:
     path: homeassistant/motion_light.yaml
     input:
-      motion_entity: binary_sensor.lumi_lumi_sensor_motion_aq2_ias_zone
+      motion_entity: binary_sensor.lumi_lumi_sensor_motion_aq2_iaszone
       light_target:
-        entity_id: light.interrupteur_guirlande_exterieure_on_off
+        entity_id: light.eclairage_exterieur_entree_light
       no_motion_wait: 120
 - id: 20211219-decorations-exterieures-001
   alias: Eclairage - Décorations extérieures
@@ -741,13 +632,13 @@
     alias: Le matin
   - id: low_luminosity
     platform: numeric_state
-    entity_id: sensor.lumi_lumi_sensor_motion_aq2_035dd406_illuminance
+    entity_id: sensor.lumi_lumi_sensor_motion_aq2_illuminance
     below: 200
     alias: Pénombre
     enabled: false
   - id: high_luminosity
     platform: numeric_state
-    entity_id: sensor.lumi_lumi_sensor_motion_aq2_035dd406_illuminance
+    entity_id: sensor.lumi_lumi_sensor_motion_aq2_illuminance
     above: 250
     alias: Trop de lumière
   - platform: time
@@ -777,7 +668,7 @@
       sequence:
       - service: light.turn_on
         target:
-          entity_id: light.interrupteur_guirlande_exterieure_on_off
+          entity_id: light.eclairage_exterieur_entree_light
         data: {}
       - service: automation.turn_off
         data: {}
@@ -786,7 +677,7 @@
     default:
     - service: light.turn_off
       target:
-        entity_id: light.interrupteur_guirlande_exterieure_on_off
+        entity_id: light.eclairage_exterieur_entree_light
       data: {}
     - service: automation.turn_on
       data: {}
@@ -822,33 +713,6 @@
         device_id: 3fad453fd3df1244e67af4dfe4558050
       no_motion_wait: 300
       motion_entity: binary_sensor.lumi_lumi_sensor_motion_aq2_iaszone
-- id: '1664207896320'
-  alias: Eclairage - Lumière salon séjour quand faible luminosité
-  description: ''
-  trigger:
-  - platform: numeric_state
-    entity_id: sensor.rf_433_mhz_luminosite
-    for:
-      hours: 0
-      minutes: 15
-      seconds: 0
-    below: 200
-  condition:
-  - condition: time
-    before: '20:00:00'
-    after: 07:00:00
-  action:
-  - service: light.turn_on
-    data: {}
-    target:
-      area_id:
-      - d4708cf2e7724bca868901a2b0f311ea
-      - 6dc7af40a9a145df92a2c17985368dee
-  - service: switch.turn_on
-    data: {}
-    target:
-      entity_id: switch.flux_salon
-  mode: single
 - id: '1664208237569'
   alias: Plex - lumiere veilleuse si pause
   description: ''
@@ -909,14 +773,14 @@
     path: hugalafutro/Color_Loop.yaml
     input:
       cl_light:
-        entity_id: light.lumiere_salon_level_light_color_on_off
+        entity_id: light.lumiere_salon_light
 - id: '1666623680105'
   alias: Sonnette dans bureau si détection devant entrée
   description: ''
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.lumi_lumi_sensor_motion_aq2_ias_zone
+    - binary_sensor.lumi_lumi_sensor_motion_aq2_iaszone
     to: 'on'
   condition:
   - condition: device

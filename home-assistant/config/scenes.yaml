@@ -41,9 +41,6 @@
     switch.adaptive_lighting_salon:
       friendly_name: flux_salon
       state: 'on'
-  metadata:
-    switch.flux_salon:
-      entity_only: true
 - id: '1608299040375'
   name: Eclairages Noel
   entities:
@@ -209,7 +206,7 @@
       friendly_name: sapin de Noel
       supported_features: 0
       state: 'on'
-    light.interrupteur_guirlande_exterieure_on_off:
+    light.eclairage_exterieur_entree_light:
       supported_color_modes:
       - onoff
       color_mode: onoff
@@ -217,14 +214,14 @@
       friendly_name: Interrupteur guirlande extérieure on_off
       supported_features: 8
       state: 'on'
-    light.marche_de_noel:
-      supported_color_modes:
-      - brightness
-      color_mode: brightness
-      brightness: 255
-      friendly_name: marché de Noël
-      supported_features: 1
-      state: 'on'
+    # light.marche_de_noel:
+    #   supported_color_modes:
+    #   - brightness
+    #   color_mode: brightness
+    #   brightness: 255
+    #   friendly_name: marché de Noël
+    #   supported_features: 1
+    #   state: 'on'
     light.decorations_de_noel:
       effect_list:
       - Android
@@ -363,7 +360,7 @@
       - 0.329
       effect: Sunrise
       entity_id:
-      - light.marche_de_noel
+      # - light.marche_de_noel
       - light.sapin_de_noel
       - light.wled
       icon: mdi:lightbulb-group
@@ -388,14 +385,14 @@
       friendly_name: sapin de Noel
       supported_features: 0
       state: 'on'
-    light.marche_de_noel:
-      supported_color_modes:
-      - brightness
-      color_mode: brightness
-      brightness: 255
-      friendly_name: marché de Noël
-      supported_features: 1
-      state: 'on'
+    # light.marche_de_noel:
+    #   supported_color_modes:
+    #   - brightness
+    #   color_mode: brightness
+    #   brightness: 255
+    #   friendly_name: marché de Noël
+    #   supported_features: 1
+    #   state: 'on'
     light.wled:
       state: 'on'
     select.wled_preset:
@@ -409,9 +406,9 @@
       state: 'on'
     light.sapin_de_noel:
       state: 'on'
-    light.marche_de_noel:
-      brightness: 1
-      state: 'on'
+    # light.marche_de_noel:
+    #   brightness: 1
+    #   state: 'on'
     light.wled:
       state: 'on'
     select.wled_preset:
