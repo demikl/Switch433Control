@@ -11,6 +11,7 @@ packages:
 
 esphome:
   name: ${devicename}
+  friendly_name: ${upper_devicename}
 
 esp32:
   board: nodemcu-32s
@@ -43,10 +44,34 @@ sensor:
     temperature:
       name: "${upper_devicename} température"
       accuracy_decimals: 2
+      filters:
+        # on a parfois des valeurs extravaguantes (200°C ...)
+        - clamp:
+            min_value: -20
+            max_value: 50
+        - filter_out: -20
+        - filter_out: 50
+
     pressure:
       name: "${upper_devicename} baromètre"
+      filters:
+        # on a parfois des valeurs extravaguantes (1260 hPa ...)
+        - clamp:
+            min_value: 800
+            max_value: 1100
+        - filter_out: 800
+        - filter_out: 1100
+
     humidity:
       name: "${upper_devicename} humidité"
+      filters:
+        # on a parfois des valeurs extravaguantes
+        - clamp:
+            min_value: 5
+            max_value: 95
+        - filter_out: 5
+        - filter_out: 95
+
     update_interval: 300s
     address: 0x76
 
