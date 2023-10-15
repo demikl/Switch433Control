@@ -9,6 +9,9 @@ output:
     pin: ${buzzer_pwm}
 rtttl:
   output: buzzer
+  on_finished_playback:
+  - logger.log: 'Song ended!'
+  - output.turn_off: buzzer
 api:
   services:
     - service: play_rtttl
@@ -25,3 +28,11 @@ api:
 #4a5,2d,16p,8d,4c#,16p,8c#,16p,2b5,2d,2g#5,1a5
 
 #mario-1-up:d=16,o=6,b=130: e5,g5,e,c,d,g
+
+button:
+  - platform: template
+    name: "play Mario 1-UP"
+    on_press:
+      - rtttl.play:
+          rtttl: |
+            mario-1-up:d=16,o=6,b=130: e5,g5,e,c,d,g
