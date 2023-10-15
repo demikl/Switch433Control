@@ -1,3 +1,8 @@
+---
+esphome:
+  name: ${devicename}
+  friendly_name: ${upper_devicename}
+
 wifi:
   networks:
   - ssid: !secret wifi_ssid
@@ -27,11 +32,11 @@ ota:
 
 switch:
   - platform: restart
-    name: "${upper_devicename} Reboot"
+    name: Reboot
 
 sensor:
   - platform: wifi_signal
-    name: "${upper_devicename} WiFi Signal Sensor"
+    name: "WiFi Signal Sensor"
     update_interval: 600s
   - platform: uptime
-    name: ${upper_devicename} Uptime Sensor
+    name: Uptime Sensor
