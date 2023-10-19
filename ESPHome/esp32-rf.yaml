@@ -24,8 +24,8 @@
 substitutions:
   devicename: esp32-rf
   upper_devicename: ESP32 RF
-  rf433_tx_pin: GPIO32
-  rf433_rx_pin: GPIO22
+  rf433_tx_pin: GPIO22
+  rf433_rx_pin: GPIO32
   bme280_i2c_sda: GPIO18
   bme280_i2c_scl: GPIO19
   buzzer_pwm: GPIO16
@@ -58,14 +58,13 @@ dallas:
 
 sensor:
   - platform: dallas
-    #address: # unkwown # 0x1c0000031edd2a28
-    index: 0
+    address: "0x6700044c9793ff28"
     name: "temperature 18b20"
   - platform: adc
     pin: GPIO34
     attenuation: auto
     name: luminosity raw adc
-    update_interval: 5s
+    update_interval: 60s
 
 output:
   - platform: ledc
