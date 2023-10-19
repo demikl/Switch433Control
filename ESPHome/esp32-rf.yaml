@@ -53,11 +53,6 @@ esp32:
 
 ## Device-specific
 
-
-# pour les logs
-mqtt:
-  broker: 192.168.1.252
-
 dallas:
   - pin: GPIO13
 
