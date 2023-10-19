@@ -20,8 +20,8 @@ captive_portal:
 
 # Enable logging
 logger:
-  level: INFO  ## minimum DEBUG obligatoire pour dumper les codes infrarouges recus, VERBOSE pour le multi-click
-  #level: DEBUG
+  #level: INFO  ## minimum DEBUG obligatoire pour dumper les codes infrarouges recus, VERBOSE pour le multi-click
+  level: DEBUG
   #level: VERBOSE
   #level: VERY_VERBOSE
 
@@ -40,3 +40,18 @@ sensor:
     update_interval: 600s
   - platform: uptime
     name: Uptime Sensor
+
+text_sensor:
+  - platform: wifi_info
+    ip_address:
+      name: ESP IP Address
+    ssid:
+      name: ESP Connected SSID
+    bssid:
+      name: ESP Connected BSSID
+    mac_address:
+      name: ESP Mac Wifi Address
+    scan_results:
+      name: ESP Latest Scan Results
+    dns_address:
+      name: ESP DNS Address

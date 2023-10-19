@@ -1,7 +1,7 @@
 ---
-esp32:
-
-status_led:
-  pin:
-    number: GPIO1
-    inverted: true
+light:
+  - platform: status_led
+    name: "ESP32 onboard LED"
+    pin:
+      number: GPIO1
+      inverted: true

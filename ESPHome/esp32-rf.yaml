@@ -2,20 +2,24 @@
 ## TODO
 #
 # Hardware
-#   - buzzer : connecter broche "-" sur GND, et "+" sur le GPIO2
+#   - Broche n°2 = GND ==> n'est pas reliée à GND
+#   - 4.7K pull-up entre GPIO13 et 3.3V
 #
 # Software
-#   - tester buzzer une fois connecté
-#   - tester BME280 une fois connecté
+#   - configurer DS18B20 sur GPIO13
+#   - configurer résistance lum. sur GPIO34
 #   - tester RXB6 une fois connecté
 #   - tester TX1 une fois connecté
 #   - tester DS18B20 une fois connecté
 #   - tester résistance lum. une fois connectée
 #
 # Schéma
-#   - inverser buzzer
-#   - connecter buzzer sur gpio4
+#   - IC ESP32 : broche 2 n'est pas GND
+#   - inverser polarité buzzer
+#   - connecter buzzer sur gpio16 et GND
 #   - led sur gpio0
+#   - data de DS18B20 sur GPIO13 (car S02 sur flash interne)
+#   - 4.7K pull-up entre GPIO13 et 3.3V
 
 substitutions:
   devicename: esp32-rf
@@ -34,6 +38,9 @@ packages:
   bme280: !include common/bme280.yaml
   buzzer: !include common/buzzer.yaml
 
+esphome:
+  name_add_mac_suffix: true
+
 esp32:
   board: nodemcu-32s
 
@@ -46,29 +53,48 @@ esp32:
 
 ## Device-specific
 
-# output:
-#   - platform: ledc
-#     id: led_pin
-#     pin: GPIO0
 
-# light:
-#   - platform: monochromatic
-#     output: led_pin
-#     id: led
-#     name: "LED"
-#     gamma_correct: 0
-#     effects:
-#       - pulse
-#       - automation:
-#           name: Sleep pattern
-#           sequence:
-#             - light.turn_on:
-#                 id: led
-#                 brightness: 100%
-#                 transition_length: 2s
-#             - delay: 2.5s
-#             - light.turn_on:
-#                 id: led
-#                 brightness: 1%
-#                 transition_length: 4s
-#             - delay: 4.5s
+# pour les logs
+mqtt:
+  broker: 192.168.1.252
+
+dallas:
+  - pin: GPIO13
+
+sensor:
+  - platform: dallas
+    #address: # unkwown # 0x1c0000031edd2a28
+    index: 0
+    name: "temperature 18b20"
+  - platform: adc
+    pin: GPIO34
+    attenuation: auto
+    name: luminosity raw adc
+    update_interval: 5s
+
+output:
+  - platform: ledc
+    id: led_pin
+    pin: GPIO0
+
+light:
+  - platform: monochromatic
+    output: led_pin
+    id: led
+    name: "LED"
+    gamma_correct: 0
+    effects:
+      - pulse
+      - automation:
+          name: Sleep pattern
+          sequence:
+            - light.turn_on:
+                id: led
+                brightness: 100%
+                transition_length: 2s
+            - delay: 2.5s
+            - light.turn_on:
+                id: led
+                brightness: 1%
+                transition_length: 4s
+            - delay: 4.5s
