@@ -540,8 +540,8 @@
     domain: binary_sensor
   condition:
   - condition: numeric_state
-    entity_id: sensor.rf_433_mhz_luminosite
-    below: 100
+    entity_id: sensor.esp32_rf_861390_luminosity_raw_adc
+    below: 0.2
   - condition: or
     conditions:
     - condition: time
@@ -582,8 +582,8 @@
         minutes: 10
         seconds: 0
     - platform: numeric_state
-      entity_id: sensor.rf_433_mhz_luminosite
-      above: 320
+      entity_id: sensor.esp32_rf_861390_luminosity_raw_adc
+      above: 0.4
       for:
         hours: 0
         minutes: 3
