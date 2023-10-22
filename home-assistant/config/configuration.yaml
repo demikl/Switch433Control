@@ -94,6 +94,8 @@ calendar:
 
 counter:
   presence_chambre:
+    name: nombre de declenchements du capteur de présence de la chambre parents
+    minimum: 0
 
 binary_sensor:
   - platform: template
