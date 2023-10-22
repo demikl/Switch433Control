@@ -146,15 +146,15 @@
           condition: trigger
           id: switch_on
         sequence:
-          - service: light.turn_on
+          - service: switch.turn_on
             entity_id:
-              - light.tipi_oceane
-              - light.etoile_oceane
+              - switch.esp32_rf_861390_sw3
+              - switch.esp32_rf_861390_sw4
       - conditions:
           condition: trigger
           id: switch_off
         sequence:
-          - service: light.turn_off
+          - service: switch.turn_off
             entity_id:
-              - light.tipi_oceane
-              - light.etoile_oceane
+              - switch.esp32_rf_861390_sw3
+              - switch.esp32_rf_861390_sw4

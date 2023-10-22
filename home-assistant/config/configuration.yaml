@@ -8,33 +8,19 @@ http:
   use_x_forwarded_for: true
   trusted_proxies:
     - 172.18.0.0/16
+    - 172.20.0.0/16
   ip_ban_enabled: true
   login_attempts_threshold: 5
 
 homeassistant:
 #   external_url: https://demikl.hopto.org
 #   internal_url: http://192.168.1.252:8123
-#   customize:
-#     switch.sw1:
-#       hidden: true
-#     switch.sw2:
-#       hidden: true
-#     switch.sw3:
-#       hidden: true
   packages:
     alarm: !include packages/alarm.yaml
     flights: !include packages/flight-tracker.yaml
-    mqtt_433: !include packages/mqtt-433.yaml
 
 # Text to speech
 tts:
-#  - platform: google_translate
-#    language: fr
-#    cache: true
-#    cache_dir: /tmp/tts
-#    time_memory: 300
-#    base_url: https://demikl.hopto.org
-#    service_name: google_say
    - platform: watson_tts
      watson_apikey: !secret ibm_watson_tts_apikey
      watson_url: "https://api.eu-de.text-to-speech.watson.cloud.ibm.com/instances/962772bb-b33f-431f-a63a-d0254ce49612"
@@ -49,22 +35,6 @@ script: !include scripts.yaml
 scene: !include scenes.yaml
 
 light:
-  - platform: switch
-    name: arbre violet
-    entity_id: switch.sw1
-  - platform: switch
-    name: derrière télé
-    entity_id: switch.sw2
-  - platform: switch
-    name: tipi Océane
-    entity_id: switch.sw3
-  - platform: switch
-    name: étoile Océane
-    entity_id: switch.sw4
-  - platform: switch
-    name: sapin de Noel
-    entity_id: switch.sw5
-  
   - platform: group
     name: Décorations de Noël
     entities:
