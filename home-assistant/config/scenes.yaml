@@ -63,8 +63,12 @@
       friendly_name: derrière télé
       supported_features: 0
       state: 'off'
-    switch.sw5:
-      friendly_name: sw5
+    light.sapin_de_noel:
+      supported_color_modes:
+      - onoff
+      color_mode: onoff
+      friendly_name: Sapin de Noël
+      supported_features: 0
       state: 'on'
     light.wled:
       effect_list:

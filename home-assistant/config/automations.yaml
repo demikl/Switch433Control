@@ -118,33 +118,6 @@
   - data: {}
     entity_id: automation.arbre_violet_fin_de_journee
     service: automation.turn_on
-- id: '1588100220232'
-  alias: Alimenter LEDStrip quand allumé
-  description: ''
-  trigger:
-  - entity_id: light.fastled_spi_light
-    from: 'off'
-    platform: state
-    to: 'on'
-  condition: []
-  action:
-  - data: {}
-    entity_id: switch.sw5
-    service: switch.turn_on
-- id: '1588100331976'
-  alias: Couper alim LEDStrip quand éteint
-  description: ''
-  trigger:
-  - entity_id: light.fastled_spi_light
-    for: 0:00:10
-    from: 'on'
-    platform: state
-    to: 'off'
-  condition: []
-  action:
-  - data: {}
-    entity_id: switch.sw5
-    service: switch.turn_off
 - id: '1588100804526'
   alias: Eclairage - Allumer bureau quand ordinateur actif
   description: ''
@@ -714,8 +687,8 @@
     to: paused
   condition:
   - condition: numeric_state
-    entity_id: sensor.rf_433_mhz_luminosite
-    below: 100
+    entity_id: sensor.esp32_rf_861390_luminosity_raw_adc
+    below: 0.2
   - condition: state
     entity_id: binary_sensor.plex_gere_eclairage_salon
     state: 'on'

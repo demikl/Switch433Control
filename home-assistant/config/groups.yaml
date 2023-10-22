@@ -1,7 +1,0 @@
-temperatures:
-  entities:
-    - sensor.rf_433_mhz_temperature
-
-RF signals:
-  entities:
-    - sensor.rf_433_mhz_signal_wifi
