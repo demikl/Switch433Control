@@ -20,6 +20,8 @@
 #   - led sur gpio0
 #   - data de DS18B20 sur GPIO13 (car S02 sur flash interne)
 #   - 4.7K pull-up entre GPIO13 et 3.3V
+#   - alim +5V du RXB6 sur +3.3V pour ne pas avoir DATA en >3.3V
+#   - écarter BME280 et TX 433
 
 substitutions:
   devicename: esp32-rf
