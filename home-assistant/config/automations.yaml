@@ -22,9 +22,9 @@
     platform: state
     to: idle
   condition:
-  - after: '20:00:00'
-    before: 05:00:00
-    condition: time
+  - condition: state
+    entity_id: binary_sensor.plex_gere_eclairage_salon
+    state: 'on'
   action:
   - service: adaptive_lighting.set_manual_control
     data:
@@ -47,18 +47,9 @@
     platform: state
     to: playing
   condition:
-  - after: '20:00:00'
-    before: 05:00:00
-    condition: time
-  - condition: time
-    weekday:
-    - mon
-    - tue
-    - thu
-    - fri
-    - sun
-    before: 00:00:00
-    after: 00:00:00
+  - condition: state
+    entity_id: binary_sensor.plex_gere_eclairage_salon
+    state: 'on'
   action:
   - data: {}
     service: light.turn_off
@@ -550,7 +541,7 @@
   condition:
   - condition: numeric_state
     entity_id: sensor.rf_433_mhz_luminosite
-    below: 150
+    below: 100
   - condition: or
     conditions:
     - condition: time
@@ -725,9 +716,9 @@
   - condition: numeric_state
     entity_id: sensor.rf_433_mhz_luminosite
     below: 100
-  - condition: time
-    before: 03:00:00
-    after: '20:00:00'
+  - condition: state
+    entity_id: binary_sensor.plex_gere_eclairage_salon
+    state: 'on'
   action:
   - service: adaptive_lighting.set_manual_control
     data:
@@ -942,4 +933,107 @@
         data:
           title: Synchro Plex
           message: Erreurs de synchronisation résolues, tout va bien !
+  mode: single
+- id: '1691958548210'
+  alias: Eclairage - entrée extérieure quand porte d'entrée s'ouvre
+  description: ''
+  trigger:
+  - type: opened
+    platform: device
+    device_id: 804b50c855c117bb0d13e425f5967fd4
+    entity_id: fce7d8468559d6625bc77c9de32bef04
+    domain: binary_sensor
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.lumi_lumi_sensor_motion_aq2_illuminance
+    below: 200
+  action:
+  - service: light.turn_on
+    data: {}
+    target:
+      device_id: 3fad453fd3df1244e67af4dfe4558050
+  - delay:
+      hours: 0
+      minutes: 5
+      seconds: 0
+      milliseconds: 0
+  - service: light.turn_off
+    data: {}
+    target:
+      device_id: 3fad453fd3df1244e67af4dfe4558050
+  mode: single
+- id: '1693475225076'
+  alias: Plex - pas de gestion des lumieres les soirs où on mange devant la tv
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - media_player.plex_plex_for_samsung_tv_ue55h6400
+    from: unavailable
+  condition:
+  - condition: state
+    entity_id: schedule.repas_sans_enfants
+    state: 'on'
+  action:
+  - service: light.turn_off
+    data: {}
+    alias: Eteindre lumière salon pour désactiver timeout de mouvement
+    target:
+      device_id: 6cae04b64ffd7efa0a9c467a72a6547c
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 2
+      milliseconds: 0
+    alias: attendre l'arret de l'automatisation "salon si mouvement"
+  - service: light.turn_on
+    data:
+      color_temp: 500
+      brightness: 71
+    target:
+      device_id: 6cae04b64ffd7efa0a9c467a72a6547c
+  - service: light.turn_on
+    data: {}
+    target:
+      entity_id: light.derriere_tele
+  - service: automation.turn_off
+    data:
+      stop_actions: true
+    target:
+      entity_id:
+      - automation.allumer_lumiere_tamisee_quand_plex_non_utilise
+      - automation.plex_lumiere_veilleuse_si_pause
+      - automation.eteindre_lumiere_quand_plex_passe_en_lecture
+    alias: désactiver les automatismes de gestion de lumieres liés à plex
+  - wait_for_trigger:
+    - platform: device
+      type: turned_off
+      device_id: 6cae04b64ffd7efa0a9c467a72a6547c
+      entity_id: c6c80d148232e1a0c66b5423e5b80dc0
+      domain: light
+    - platform: state
+      entity_id:
+      - light.derriere_tele
+      to: 'off'
+      from: 'on'
+    timeout:
+      hours: 3
+      minutes: 0
+      seconds: 0
+      milliseconds: 0
+    alias: Attendre qu'une lumiere soit éteinte volontairement
+  - service: automation.turn_on
+    data: {}
+    target:
+      entity_id:
+      - automation.allumer_lumiere_tamisee_quand_plex_non_utilise
+      - automation.eteindre_lumiere_quand_plex_passe_en_lecture
+      - automation.plex_lumiere_veilleuse_si_pause
+    alias: réactiver les automatismes de gestion de lumieres liés à plex
+  - service: light.turn_off
+    data: {}
+    target:
+      area_id:
+      - d4708cf2e7724bca868901a2b0f311ea
+      - 6dc7af40a9a145df92a2c17985368dee
   mode: single
