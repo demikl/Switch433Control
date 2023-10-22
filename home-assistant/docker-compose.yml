@@ -6,7 +6,8 @@ services:
     volumes:
       - ${HOME}/Switch433Control/home-assistant/config:/config
     devices:
-      - /dev/ttyHASkyConnect:/dev/ttyUSB0
+      #- /dev/ttyHASkyConnect:/dev/ttyUSB0
+      - /dev/serial/by-id/usb-Nabu_Casa_SkyConnect_v1.0_d268da08b114ed11871db48be054580b-if00-port0:/dev/ttyUSB0
     environment:
       - TZ=Europe/Paris
     network_mode: host
@@ -65,7 +66,7 @@ services:
 
   esphome:
       container_name: esphome
-      image: esphome/esphome:2022.12.8
+      image: esphome/esphome:stable
       volumes:
         - ${HOME}/Switch433Control/ESPHome/:/config:rw
         # Use local time for logging timestamps
@@ -78,6 +79,7 @@ services:
     restart: always
     container_name: teleinfo2mqtt
     devices:
-      - /dev/ttyTeleinfo:/dev/ttyUSB0             # Serial port device
+      #- /dev/ttyTeleinfo:/dev/ttyUSB0             # Serial port device
+      - /dev/serial/by-id/usb-FTDI_FT232R_USB_UART_A500DBTT-if00-port0:/dev/ttyUSB0
     environment:
       - MQTT_URL=mqtt://192.168.1.252:1883   # MQTT broker url  
