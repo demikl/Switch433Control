@@ -3,11 +3,14 @@ substitutions:
   devicename: parents_bedroom
   upper_devicename: Chambre des parents
   light_id_alarme: bed_head_ledstrip
+  bme280_i2c_sda: GPIO21
+  bme280_i2c_scl: GPIO22
 
 packages:
   device_base: !include common/device_base.yaml
   device_esp32: !include common/device_esp32.yaml
   alarme: !include common/sensors_alarme.yaml
+  bme280: !include common/bme280.yaml
 
 esphome:
   name: ${devicename}
@@ -23,10 +26,6 @@ wifi:
     gateway: 192.168.1.1
     subnet: 255.255.255.0
 
-i2c:
-  sda: GPIO21
-  scl: GPIO22
-
 #
 #text_sensor:
 #  - platform: ble_scanner
@@ -39,41 +38,6 @@ sensor:
 #      name: "Xiaomi Mi Scale Weight"
 #    impedance:
 #      name: "Xiaomi Mi Scale Impedance"
-
-  - platform: bme280
-    temperature:
-      name: "${upper_devicename} température"
-      accuracy_decimals: 2
-      filters:
-        # on a parfois des valeurs extravaguantes (200°C ...)
-        - clamp:
-            min_value: -20
-            max_value: 50
-        - filter_out: -20
-        - filter_out: 50
-
-    pressure:
-      name: "${upper_devicename} baromètre"
-      filters:
-        # on a parfois des valeurs extravaguantes (1260 hPa ...)
-        - clamp:
-            min_value: 800
-            max_value: 1100
-        - filter_out: 800
-        - filter_out: 1100
-
-    humidity:
-      name: "${upper_devicename} humidité"
-      filters:
-        # on a parfois des valeurs extravaguantes
-        - clamp:
-            min_value: 5
-            max_value: 95
-        - filter_out: 5
-        - filter_out: 95
-
-    update_interval: 300s
-    address: 0x76
 
 output:
   - platform: ledc
