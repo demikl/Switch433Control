@@ -46,12 +46,12 @@ esphome:
 esp32:
   board: nodemcu-32s
 
-# wifi:
-#   manual_ip:
-#     # pour une connection rapide, et pour que le conteneur docker esphome puisse trouver l'ESP sans mDNS
-#     static_ip: 192.168.1.244
-#     gateway: 192.168.1.1
-#     subnet: 255.255.255.0
+wifi:
+  manual_ip:
+    # pour une connection rapide, et pour que le conteneur docker esphome puisse trouver l'ESP sans mDNS
+    static_ip: 192.168.1.244
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
 
 ## Device-specific
 
@@ -65,8 +65,15 @@ sensor:
   - platform: adc
     pin: GPIO34
     attenuation: auto
+    id: luminosity_raw_adc
     name: luminosity raw adc
     update_interval: 60s
+
+button:
+  - platform: template
+    name: "MAJ sensor lumiere"
+    on_press:
+      - component.update: luminosity_raw_adc
 
 output:
   - platform: ledc
