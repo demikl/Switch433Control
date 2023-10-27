@@ -1,0 +1,285 @@
+---
+# inspiration : https://raw.githubusercontent.com/zibous/ha-watermeter
+substitutions:
+  devicename: esp32-compteur-eau
+  upper_devicename: ESP32 compteur eau
+
+packages:
+  device_base: !include common/device_base.yaml
+  device_esp32: !include common/device_esp32.yaml
+
+esphome:
+  name_add_mac_suffix: true
+
+esp32:
+  board: az-delivery-devkit-v4
+  framework:
+    type: arduino
+
+wifi:
+  # manual_ip:
+    # # pour une connection rapide, et pour que le conteneur docker esphome puisse trouver l'ESP sans mDNS
+    # static_ip: 192.168.1.xxx
+    # gateway: 192.168.1.1
+    # subnet: 255.255.255.0
+
+## Device-specific
+
+preferences:
+  flash_write_interval: 10min
+
+external_components:
+  - source: github://SzczepanLeon/esphome-components@main
+    refresh: 0s
+    components: [wmbus]
+
+globals:
+  - id: cc1101_state
+    type: int
+    restore_value: no
+    initial_value: '0'
+
+  - id: alarm_error_text
+    type: std::vector<std::string>
+    restore_value: no
+    initial_value: '{"no error", "general_alarm","leakage","meter_blocked","back_flow","underflow","overflow","submarine","sensor_fraud","mechanical_fraud"}'
+
+  - id: cc1101_state_message
+    type: std::vector<std::string>
+    restore_value: no
+    initial_value: '{"Init", "Warte auf Daten", "Daten empfangem", "Ready", "Error"}'
+
+time:
+  - platform: sntp
+    id: time_sntp
+    timezone: Europe/Paris
+    servers:
+      - 0.at.pool.ntp.org
+      - 0.pool.ntp.org
+
+    on_time:
+      # check cc1101 telegram state message every 30s
+      - seconds: 30
+        then:
+          - script.execute: set_status_message
+
+
+## ---------------------------------------------------
+## COMPONENT SCRIPTS
+## ---------------------------------------------------
+script:
+
+  - id: set_status_message
+    then:
+        - lambda: |-
+            int msgcode = int(id(cc1101_state));
+            std::string message = id(cc1101_state_message)[msgcode];
+            ESP_LOGD("wmbus", "cc1101 state message: %s, error code: %d", message.c_str(), msgcode);
+            id(watermeter_status_message).publish_state(message);
+
+wmbus:
+  mosi_pin: GPIO19
+  miso_pin: GPIO05
+  clk_pin: GPIO18
+  cs_pin: GPIO04
+  gdo0_pin: GPIO16
+  gdo2_pin: GPIO17
+
+  # log_unknown (Optional): Show telegrams from not configured meters in log. Defaults to False
+  log_unknown: true
+
+  ## -------------------------------------------------
+  ## led blink mode (optional) xx = PIN
+  ## -------------------------------------------------
+  # led_pin: GPIOxx
+  # led_blink_time: "100ms"
+
+sensor:
+
+  - platform: wmbus
+
+    # Meter ID (usually from sticker). Can be specified as decimal or hex.
+    # only HEX is working for my watermeter !
+    # see: https://github.com/SzczepanLeon/esphome-components/issues/6
+    # edit watermeterid in the secrets file
+    # add_prefix: enable/disable add watermeterid to lqi, rssi, total_water_m3
+    meter_id: 0x92407109
+    type: izar
+    add_prefix: false
+
+    # The LQI value reported by the CC1101 is a 7 bit unsigned number with a range from 0 to 127.
+    # Note that a lower value indicates a better link.
+    # The LQI of a received packet will be bad (higher number) when there is lot of interference.
+    lqi:
+      id: wmbus_cc1101_lqi
+      name: "CC1101 LQI"
+      entity_category: "diagnostic"
+      unit_of_measurement: "lqi"
+      state_class: "measurement"
+
+    # The RSSI value reported by the CC1101 is a 8 bit signed number with an effective
+    # range from -138 dBm to -10.5 dBm when the CC1101 is operating around 868 MHz.
+    # RSSI stands for received signal strength (power) indication (in dBm).
+    # A higher value indicates higher power. (internal only) see id: cc1101_rssi
+    rssi:
+      id: wmbus_cc1101_rssi
+      name: "CC1101 RSSI"
+      filters:
+        - lambda: return min(max(2 * (x + 100.0), 0.0), 100.0);
+      unit_of_measurement: "%"
+      entity_category: "diagnostic"
+      state_class: "measurement"
+      icon: mdi:rss
+
+    total_water_m3:
+      id: "waterdisplay"
+      name: "Volume eau"
+      unit_of_measurement: "m³"
+      state_class: total_increasing
+      device_class: "water"
+      accuracy_decimals: 3
+      icon: mdi:counter
+
+      # filters:
+      #   - heartbeat: 60s
+
+    # water current month (wM-Bus v2.1.4)
+    current_month_total_water_l:
+      name: Volume eau mois en cours
+      id: "watermonth"
+      accuracy_decimals: 2
+      unit_of_measurement: "L"
+      icon: mdi:water-outline
+      state_class: total_increasing
+      device_class: "water"
+
+    # get the last month total watermter m3 from the wmbus telegram  (wM-Bus 2.1.10)
+    last_month_total_water_m3:
+      name: Volume eau mois précédent
+      id: "waterdisplay_lastmonth"
+      unit_of_measurement: "m³"
+      state_class: total_increasing
+      device_class: "water"
+      accuracy_decimals: 3
+      icon: mdi:counter
+
+    # get the battery life time (wM-Bus v2.1.4)
+    remaining_battery_life_y:
+      name: Batterie tele-emetteur
+      id: "watermeter_batterie"
+      accuracy_decimals: 2
+      unit_of_measurement: "Jahre"
+      state_class: "measurement"
+      entity_category: "diagnostic"
+      icon: mdi:battery
+
+    # get the last transmit periode (wM-Bus v2.1.4)
+    transmit_period_s:
+      name: "Periode MAJ tele-emetteur"
+      id: "watermeter_transmit_periode"
+      unit_of_measurement: "sec"
+      state_class: "measurement"
+      accuracy_decimals: 2
+      entity_category: "diagnostic"
+      icon: mdi:timelapse
+
+    ## get the current watermeter alarms and publish the text message (wM-Bus 2.1.10)
+    ## see: id: watermeter_alarm_message
+    current_alarms:
+      id: "watermeter_current_alarms"
+      name: "Alarmes courantes tele-emetteur"
+      entity_category: "diagnostic"
+      icon: mdi:message-alert-outline
+      on_value:
+        then:
+          - lambda: |-
+              int error_code = int(x);
+              std::string message = "";
+              if(error_code==0){
+                  message = id(alarm_error_text)[error_code];
+                  id(watermeter_alarm_message).publish_state(message);
+                  ESP_LOGD("wmbus", "Alarm message: %s, error code: %d", message, error_code);
+              }else{
+                for (int i = 1; i < 10; ++i) {
+                  if (error_code & (1 << i)) {
+                    if (!message.empty()) {
+                      message += ", ";
+                    }
+                    message += id(alarm_error_text)[i];
+                  }
+                }
+                id(watermeter_alarm_message).publish_state(message);
+                ESP_LOGW("wmbus", "WARNING Alarm message: %s, error code: %d", message.c_str(), error_code);
+                id(watermeter_alarm_timestamp).publish_state(id(time_sntp).now().strftime("%Y-%m-%dT%H:%M:%S %Z").c_str());
+              }
+
+    ## get the prevois watermeter alarms and publish the text message (wM-Bus 2.1.10)
+    ## see: id: watermeter_alarm_perv_message
+    previous_alarms:
+      id: "watermeter_previous_alarms"
+      name: "Alarmes passées tele-emetteur"
+      icon: mdi:message-alert
+      entity_category: "diagnostic"
+      on_value:
+        then:
+          - lambda: |-
+              int error_code = int(x);
+              std::string message = "";
+              if(error_code==0){
+                  message = id(alarm_error_text)[error_code];
+                  id(watermeter_alarm_perv_message).publish_state(message);
+                  ESP_LOGD("wmbus", "Alarm message: %s, error code: %d", message, error_code);
+              }else{
+                for (int i = 1; i < 10; ++i) {
+                  if (error_code & (1 << i)) {
+                    if (!message.empty()) {
+                      message += ", ";
+                    }
+                    message += id(alarm_error_text)[i];
+                  }
+                }
+                ESP_LOGW("wmbus", "WARNING Alarm message: %s, error code: %d", message.c_str(), error_code);
+                id(watermeter_alarm_timestamp).publish_state(id(time_sntp).now().strftime("%Y-%m-%dT%H:%M:%S %Z").c_str());
+              }
+              id(watermeter_alarm_perv_message).publish_state(message);
+              if(id(watermeter_alarm_timestamp).has_state() == false) {
+                id(watermeter_alarm_timestamp).publish_state("--");
+              }
+
+
+text_sensor:
+
+  # watermeter status message (updated by script: set_status_message)
+  - platform: template
+    name: Message de statut tele-emetteur
+    id: watermeter_status_message
+    icon: mdi:bell
+    entity_category: "diagnostic"
+
+  # watermeter alarm message (updated by id: current_alarms)
+  - platform: template
+    name: Message d'alarme tele-emetteur
+    id: watermeter_alarm_message
+    icon: mdi:alarm-light
+    entity_category: "diagnostic"
+
+  # watermeter previous alarm message (updated by id: current_prev_alarms)
+  - platform: template
+    name: Alarmes passées tele-emetteur
+    id: watermeter_alarm_perv_message
+    icon: mdi:alarm-light
+    entity_category: "diagnostic"
+
+  # watermeter alarm timestamp (updated by id: current_alarms)
+  - platform: template
+    name: Alarmes tele-emetteur timestamp
+    id: watermeter_alarm_timestamp
+    icon: mdi:alarm-light
+    entity_category: "diagnostic"
+
+  # waterdisplay timestamp last update (updated by id: "waterdisplay")
+  - platform: template
+    name: timestamp derniere trame tele-emetteur
+    id: watermeter_lastupdate
+    icon: mdi:clock-start
+    entity_category: "diagnostic"
