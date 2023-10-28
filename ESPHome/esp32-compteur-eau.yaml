@@ -104,7 +104,8 @@ sensor:
     # edit watermeterid in the secrets file
     # add_prefix: enable/disable add watermeterid to lqi, rssi, total_water_m3
     meter_id: 0x92407109
-    type: izar
+    type: c5isf
+    key: "51728910E66D83F851728910E66D83F8"
     add_prefix: false
 
     # The LQI value reported by the CC1101 is a 7 bit unsigned number with a range from 0 to 127.
