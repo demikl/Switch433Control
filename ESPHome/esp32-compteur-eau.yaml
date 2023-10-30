@@ -17,11 +17,11 @@ esp32:
     type: arduino
 
 wifi:
-  # manual_ip:
-    # # pour une connection rapide, et pour que le conteneur docker esphome puisse trouver l'ESP sans mDNS
-    # static_ip: 192.168.1.xxx
-    # gateway: 192.168.1.1
-    # subnet: 255.255.255.0
+  manual_ip:
+    # pour une connection rapide, et pour que le conteneur docker esphome puisse trouver l'ESP sans mDNS
+    static_ip: 192.168.1.248
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
 
 ## Device-specific
 
@@ -30,7 +30,7 @@ preferences:
 
 external_components:
   - source: github://SzczepanLeon/esphome-components@main
-    refresh: 3600s
+    refresh: 36000s
     components: [wmbus]
 
 time:
@@ -72,6 +72,11 @@ sensor:
     key: "51728910E66D83F851728910E66D83F8"
     add_prefix: false
 
+# long frames (historical data ?)
+# short frame | long frame
+# 1E44A511097140927B077A91001005080C082EF56B838836CDCF35267DE159 | 3E44A511097140927B077A9100300523AE3F358E34AD095D764E9BF4AD299F64CFEAE6AFC77768DBFC7717DB75FC0B2A0A26053CC966DF8353C3E46EFD79EF
+
+
     # The LQI value reported by the CC1101 is a 7 bit unsigned number with a range from 0 to 127.
     # Note that a lower value indicates a better link.
     # The LQI of a received packet will be bad (higher number) when there is lot of interference.
@@ -93,6 +98,7 @@ sensor:
     total_water_m3:
       id: "waterdisplay"
       name: "Volume eau"
+      force_update: true
       # filters:
       #   - heartbeat: 300s
 
