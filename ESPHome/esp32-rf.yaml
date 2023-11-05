@@ -68,6 +68,24 @@ sensor:
     id: luminosity_raw_adc
     name: luminosity raw adc
     update_interval: 60s
+    on_raw_value:
+      then:
+        - sensor.template.publish:
+            id: luminosity
+            state: !lambda 'return x;'
+  - platform: template
+    id: luminosity
+    name: luminosity
+    unit_of_measurement: "%"
+    accuracy_decimals: 0
+    icon: mdi:brightness-percent
+    state_class: measurement
+    filters:
+      - calibrate_linear:
+          method: least_squares
+          datapoints:
+            - 0.0 -> 0.0
+            - 2.35 -> 100.0
 
 button:
   - platform: template
