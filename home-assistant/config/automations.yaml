@@ -512,9 +512,6 @@
     entity_id: binary_sensor.zb_pir_salon_iaszone
     domain: binary_sensor
   condition:
-  - condition: numeric_state
-    entity_id: sensor.esp32_rf_861390_luminosity_raw_adc
-    below: 0.2
   - condition: or
     conditions:
     - condition: time
@@ -532,6 +529,9 @@
         entity_id: media_player.tv_salon
         state: unavailable
     alias: verif horaires et activités
+  - condition: state
+    entity_id: binary_sensor.faible_luminosite_salon
+    state: 'on'
   action:
   - device_id: 71913aa7160911eb97c7454e377fb03a
     domain: select
@@ -554,18 +554,16 @@
         hours: 0
         minutes: 10
         seconds: 0
-    - platform: numeric_state
-      entity_id: sensor.esp32_rf_861390_luminosity_raw_adc
-      above: 0.4
-      for:
-        hours: 0
-        minutes: 3
-        seconds: 0
     - platform: device
       type: turned_off
       device_id: 6cae04b64ffd7efa0a9c467a72a6547c
       entity_id: light.lumiere_salon_light
       domain: light
+    - platform: state
+      entity_id:
+      - binary_sensor.haute_luminosite_salon
+      to: 'on'
+      from: 'off'
     timeout:
       hours: 6
       minutes: 0
