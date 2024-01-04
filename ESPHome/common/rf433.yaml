@@ -9,6 +9,11 @@ remote_receiver:
   filter: 4us
   idle: 4ms
   tolerance: 60%
+  dump:
+    - rc_switch
+
+# logger:
+#   level: DEBUG
 
 remote_transmitter:
   pin: ${rf433_tx_pin}
@@ -129,7 +134,7 @@ binary_sensor:
     on_press:
       then:
         - switch.template.publish:
-            id: sw4
+            id: sw5
             state: "ON"
 
   - platform: remote_receiver
