@@ -122,11 +122,6 @@
   alias: Eclairage - Allumer bureau quand ordinateur actif
   description: ''
   trigger:
-  - entity_id: device_tracker.pc_portable_evtech
-    from: not_home
-    platform: state
-    to: home
-    enabled: false
   - platform: state
     entity_id:
     - sensor.l_5cd240dq9s_sessionstate_2
@@ -150,12 +145,6 @@
   alias: Eteindre bureau quand ordinateur inactif
   description: ''
   trigger:
-  - entity_id: device_tracker.pc_portable_evtech
-    for: 0:01:00
-    from: home
-    platform: state
-    to: not_home
-    enabled: false
   - platform: state
     entity_id:
     - sensor.l_5cd240dq9s_sessionstate_2
@@ -175,10 +164,11 @@
   alias: say "Au revoir la tablette de Raphaël" when tablette_raphael_new is away
   description: ''
   trigger:
-  - entity_id: device_tracker.tablette_raphael_new
-    from: home
+  - entity_id:
+    - binary_sensor.storio_raphael_lan
+    from: 'on'
     platform: state
-    to: not_home
+    to: 'off'
   condition: []
   action:
   - data:
@@ -190,10 +180,11 @@
   alias: say "Au revoir la tablette de Océane" when tablette_oceane is away
   description: ''
   trigger:
-  - entity_id: device_tracker.tablette_oceane
-    from: home
+  - entity_id:
+    - binary_sensor.storio_oceane_lan
+    from: 'on'
     platform: state
-    to: not_home
+    to: 'off'
   condition: []
   action:
   - data:
@@ -306,24 +297,28 @@
   alias: sapin de noel a l'ouverture des volets
   description: ''
   trigger:
-  - type: motion
-    platform: device
-    device_id: 9d786ae16f50d9f3a36c81040ea20da5
-    entity_id: binary_sensor.zb_pir_salon_iaszone
-    domain: binary_sensor
-    alias: Mouvement dans le salon
+  - platform: state
+    entity_id:
+    - binary_sensor.presence_combinee_salon
+    from: 'off'
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 5
   condition:
-  - condition: time
-    after: 06:00:00
+  - alias: Le matin
+    condition: time
+    after: 07:00:00
     before: '11:30:00'
-    alias: Le matin
   action:
   - service: light.turn_on
     data: {}
     target:
       entity_id: light.sapin_de_noel
-  - scene: scene.eclairages_noel
     enabled: false
+  - scene: scene.eclairages_noel
+    enabled: true
   - wait_for_trigger:
     - platform: time
       at: '14:00:00'
@@ -511,6 +506,12 @@
     device_id: 9d786ae16f50d9f3a36c81040ea20da5
     entity_id: binary_sensor.zb_pir_salon_iaszone
     domain: binary_sensor
+    enabled: false
+  - platform: state
+    entity_id:
+    - binary_sensor.presence_combinee_salon
+    to: 'on'
+    from: 'off'
   condition:
   - condition: or
     conditions:
@@ -532,12 +533,8 @@
   - condition: state
     entity_id: binary_sensor.faible_luminosite_salon
     state: 'on'
+    enabled: true
   action:
-  - device_id: 71913aa7160911eb97c7454e377fb03a
-    domain: select
-    entity_id: select.wled_preset
-    type: select_option
-    option: Halloween léger
   - service: light.turn_on
     data:
       brightness_pct: 100
@@ -554,6 +551,7 @@
         hours: 0
         minutes: 10
         seconds: 0
+      enabled: false
     - platform: device
       type: turned_off
       device_id: 6cae04b64ffd7efa0a9c467a72a6547c
@@ -564,6 +562,15 @@
       - binary_sensor.haute_luminosite_salon
       to: 'on'
       from: 'off'
+    - platform: state
+      entity_id:
+      - binary_sensor.presence_combinee_salon
+      from: 'on'
+      to: 'off'
+      for:
+        hours: 0
+        minutes: 5
+        seconds: 0
     timeout:
       hours: 6
       minutes: 0
@@ -588,63 +595,42 @@
   alias: Eclairage - Décorations extérieures
   description: ''
   trigger:
-  - id: morning
-    platform: time
-    at: 06:00:00
-    alias: Le matin
-  - id: low_luminosity
-    platform: numeric_state
-    entity_id: sensor.lumi_lumi_sensor_motion_aq2_illuminance
-    below: 200
-    alias: Pénombre
-    enabled: false
-  - id: high_luminosity
-    platform: numeric_state
-    entity_id: sensor.lumi_lumi_sensor_motion_aq2_illuminance
-    above: 250
-    alias: Trop de lumière
-  - platform: time
-    at: '17:00:00'
-    alias: Le soir
-    id: evening
-  - platform: time
-    at: '22:30:00'
-    alias: Extinction des lampadaires
-    id: lampadaires
-  - platform: time
-    at: 09:00:00
-    alias: Fin d'allumage le matin
-    id: fin-matin
+  - platform: state
+    entity_id:
+    - schedule.horaires_decorations_exterieures
+    to: 'on'
+    from: 'off'
   action:
-  - alias: ON or OFF
-    choose:
-    - conditions:
-      - condition: or
-        conditions:
-        - condition: trigger
-          id: morning
-        - condition: trigger
-          id: low_luminosity
-        - condition: trigger
-          id: evening
+  - repeat:
+      count: 10
       sequence:
       - service: light.turn_on
-        target:
-          entity_id: light.eclairage_exterieur_entree_light
-        data: {}
-      - service: automation.turn_off
         data: {}
         target:
-          entity_id: automation.lumiere_exterieure_entree
-    default:
-    - service: light.turn_off
-      target:
-        entity_id: light.eclairage_exterieur_entree_light
-      data: {}
-    - service: automation.turn_on
-      data: {}
-      target:
-        entity_id: automation.lumiere_exterieure_entree
+          entity_id: light.esp32_rf_861390_sw3
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
+  - wait_for_trigger:
+    - platform: state
+      entity_id:
+      - schedule.horaires_decorations_exterieures
+      to: 'off'
+      from: 'on'
+  - repeat:
+      count: 10
+      sequence:
+      - service: light.turn_off
+        data: {}
+        target:
+          entity_id: light.esp32_rf_861390_sw3
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
 - id: '1639932781742'
   alias: interrupteur lumière extérieure éteint
   description: ''
@@ -805,10 +791,9 @@
   description: ''
   trigger:
   - entity_id:
-    - device_tracker.tablette_lucas
-    from: not_home
+    - binary_sensor.storio_lucas_lan
     platform: state
-    to: home
+    to: 'on'
   condition: []
   action:
   - service: tts.watson_tts_say
@@ -915,9 +900,14 @@
     entity_id: fce7d8468559d6625bc77c9de32bef04
     domain: binary_sensor
   condition:
-  - condition: numeric_state
-    entity_id: sensor.lumi_lumi_sensor_motion_aq2_illuminance
-    below: 200
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: sensor.lumi_lumi_sensor_motion_aq2_illuminance
+      state: unavailable
+    - condition: numeric_state
+      entity_id: sensor.lumi_lumi_sensor_motion_aq2_illuminance
+      below: 200
   action:
   - service: light.turn_on
     data: {}

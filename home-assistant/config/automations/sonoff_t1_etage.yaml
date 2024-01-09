@@ -121,7 +121,7 @@
           - alias: "lights are OFF"
             condition: state
             entity_id:
-              - light.tipi_oceane
+            # - light.tipi_oceane
               - light.etoile_oceane
             state: 'off'
       - alias: "lumière allumée et on veut éteindre"
@@ -132,10 +132,10 @@
           - alias: "any light is ON"
             condition: or
             conditions:
-              - condition: state
-                entity_id:
-                  - light.tipi_oceane
-                state: 'on'
+#              - condition: state
+#                entity_id:
+#                  - light.tipi_oceane
+#                state: 'on'
               - condition: state
                 entity_id:
                   - light.etoile_oceane

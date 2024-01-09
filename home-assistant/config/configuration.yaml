@@ -8,6 +8,7 @@ http:
   use_x_forwarded_for: true
   trusted_proxies:
     - 172.18.0.0/16
+    - 172.19.0.0/16
     - 172.20.0.0/16
   ip_ban_enabled: true
   login_attempts_threshold: 5
@@ -17,7 +18,6 @@ homeassistant:
 #   internal_url: http://192.168.1.252:8123
   packages:
     alarm: !include packages/alarm.yaml
-    flights: !include packages/flight-tracker.yaml
 
 # Text to speech
 tts:
@@ -71,22 +71,6 @@ google_assistant:
         - le lit d'Océane
     light.decorations_de_noel:
       name: Décorations de Noël
-
-device_tracker:
-  - platform: ping
-    scan_interval: 00:00:30
-    hosts:
-      pc_portable_evtech: pc-portable-evtech.lan
-      tv_salon: 192.168.1.31
-      tablette_raphael_old: storio-ancienne.lan
-      tablette_raphael_new: storio-raphael.lan
-      tablette_oceane: storio-oceane.lan
-      tablette_lucas: storio-lucas.lan
-      honor_8x: Honor8X.lan
-      oppo_rx17_neo: oppo-rx17-neo.lan
-      dodgee_f5: dodgee-f5.lan
-      nintendo_wii: 192.168.31.141
-      nintendo_switch: 192.168.1.49
 
 calendar:
   - platform: todoist

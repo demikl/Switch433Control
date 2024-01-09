@@ -11,8 +11,8 @@ services:
     environment:
       - TZ=Europe/Paris
     network_mode: host
-    ports:
-      - "8123:8123"
+      #ports:
+      #  - "8123:8123"
     restart: always
     depends_on: 
       - mqtt

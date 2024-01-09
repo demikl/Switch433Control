@@ -50,19 +50,6 @@
 - id: '1608299040375'
   name: Eclairages Noel
   entities:
-    light.arbre_violet:
-      supported_color_modes:
-      - onoff
-      color_mode: onoff
-      friendly_name: arbre violet
-      supported_features: 0
-      state: 'on'
-    light.derriere_tele:
-      supported_color_modes:
-      - onoff
-      friendly_name: derrière télé
-      supported_features: 0
-      state: 'off'
     light.wled:
       effect_list:
       - Android
@@ -186,7 +173,7 @@
       supported_color_modes:
       - rgb
       color_mode: rgb
-      brightness: 164
+      brightness: 209
       hs_color:
       - 0
       - 0
@@ -206,162 +193,31 @@
       supported_color_modes:
       - onoff
       color_mode: onoff
-      friendly_name: sapin de Noel
+      friendly_name: Sapin de Noël
       supported_features: 0
       state: 'on'
-    light.eclairage_exterieur_entree_light:
+    light.derriere_tele:
       supported_color_modes:
       - onoff
       color_mode: onoff
-      off_brightness:
-      friendly_name: Interrupteur guirlande extérieure on_off
-      supported_features: 8
+      friendly_name: Derrière TV
+      supported_features: 0
       state: 'on'
-    light.decorations_de_noel:
-      effect_list:
-      - Android
-      - Aurora
-      - Blends
-      - Blink
-      - Blink Rainbow
-      - Bouncing Balls
-      - Bpm
-      - Breathe
-      - Candle
-      - Candle Multi
-      - Candy Cane
-      - Chase
-      - Chase 2
-      - Chase 3
-      - Chase Flash
-      - Chase Flash Rnd
-      - Chase Rainbow
-      - Chase Random
-      - Chunchun
-      - Colorful
-      - Colorloop
-      - Colortwinkles
-      - Colorwaves
-      - Dancing Shadows
-      - Dissolve
-      - Dissolve Rnd
-      - Drip
-      - Dynamic
-      - Dynamic Smooth
-      - Fade
-      - Fairy
-      - Fairytwinkle
-      - Fill Noise
-      - Fire 2012
-      - Fire Flicker
-      - Fireworks
-      - Fireworks 1D
-      - Fireworks Starburst
-      - Flow
-      - Glitter
-      - Gradient
-      - Halloween
-      - Halloween Eyes
-      - Heartbeat
-      - ICU
-      - Juggle
-      - Lake
-      - Lighthouse
-      - Lightning
-      - Loading
-      - Meteor
-      - Meteor Smooth
-      - Multi Comet
-      - Noise 1
-      - Noise 2
-      - Noise 3
-      - Noise 4
-      - Noise Pal
-      - Oscillate
-      - Pacifica
-      - Palette
-      - Percent
-      - Phased
-      - Phased Noise
-      - Plasma
-      - Police
-      - Popcorn
-      - Pride 2015
-      - Railway
-      - Rain
-      - Rainbow
-      - Rainbow Runner
-      - Random Colors
-      - Ripple
-      - Ripple Rainbow
-      - Running
-      - Running Dual
-      - Saw
-      - Scan
-      - Scan Dual
-      - Scanner
-      - Scanner Dual
-      - Sine
-      - Sinelon
-      - Sinelon Dual
-      - Sinelon Rainbow
-      - Solid
-      - Solid Glitter
-      - Solid Pattern
-      - Solid Pattern Tri
-      - Sparkle
-      - Sparkle Dark
-      - Sparkle+
-      - Spots
-      - Spots Fade
-      - Stream
-      - Stream 2
-      - Strobe
-      - Strobe Mega
-      - Strobe Rainbow
-      - Sunrise
-      - Sweep
-      - Sweep Random
-      - TV Simulator
-      - Tetrix
-      - Theater
-      - Theater Rainbow
-      - Traffic Light
-      - Tri Fade
-      - Tri Wipe
-      - Twinkle
-      - Twinklecat
-      - Twinklefox
-      - Twinkleup
-      - Two Dots
-      - Washing Machine
-      - Wipe
-      - Wipe Random
+    light.arbre_violet:
       supported_color_modes:
-      - brightness
       - onoff
-      - rgb
-      color_mode: rgb
-      brightness: 209
-      hs_color:
-      - 0
-      - 0
-      rgb_color:
-      - 255
-      - 255
-      - 255
-      xy_color:
-      - 0.323
-      - 0.329
-      effect: Sunrise
-      entity_id:
-      - light.sapin_de_noel
-      - light.wled
-      icon: mdi:lightbulb-group
-      friendly_name: Décorations de Noël
-      supported_features: 36
+      color_mode: onoff
+      friendly_name: Arbre violet
+      supported_features: 0
       state: 'on'
-  icon: mdi:mdi-pine-tree
+  icon: mdi:pine-tree
+  metadata:
+    light.sapin_de_noel:
+      entity_only: true
+    light.derriere_tele:
+      entity_only: true
+    light.arbre_violet:
+      entity_only: true
 - id: '1609358906803'
   name: pré minuit nouvel an
   entities:
