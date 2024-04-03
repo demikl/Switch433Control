@@ -21,7 +21,7 @@ captive_portal:
 # Enable logging
 logger:
   #level: INFO  ## minimum DEBUG obligatoire pour dumper les codes infrarouges recus, VERBOSE pour le multi-click
-  level: DEBUG
+  #level: DEBUG
   #level: VERBOSE
   #level: VERY_VERBOSE
 
@@ -43,8 +43,8 @@ sensor:
 
 text_sensor:
   - platform: wifi_info
-    ip_address:
-      name: ESP IP Address
+    # ip_address:
+    #   name: ESP IP Address
     ssid:
       name: ESP Connected SSID
     bssid:

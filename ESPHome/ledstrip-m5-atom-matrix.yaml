@@ -1,53 +1,56 @@
 substitutions:
-  devicename: ledstrip
-  upper_devicename: Bureau
-  light_id_alarme: ledstrip_bureau
-  buzzer_pwm: D6
-  buzzer_platform: esp8266_pwm
-  bme280_i2c_sda: D2
-  bme280_i2c_scl: D1
+  devicename: ledstrip-matrix
+  upper_devicename: Bureau-matrix
 
 packages:
   device_base: !include common/device_base.yaml
-  device_esp32: !include common/device_esp8266.yaml
-  alarme: !include common/sensors_alarme.yaml
-  buzzer: !include common/buzzer.yaml
-  bme280: !include common/bme280.yaml
+  device_esp32: !include common/device_esp32.yaml
 
 esphome:
-  name: ${devicename}
-  friendly_name: ${upper_devicename}
+  name_add_mac_suffix: true
 
-esp8266:
-  board: nodemcuv2
+esp32:
+  board: pico32
 
 wifi:
   manual_ip:
-    static_ip: 192.168.1.200
+    static_ip: 192.168.1.206
     gateway: 192.168.1.1
     subnet: 255.255.255.0
 
-# Enable logging
-# Set logger to NOT default pins because we are using RX and TX for driving LEDs
-logger:
-  baud_rate: 0
-  hardware_uart: uart1
+binary_sensor:
+  - platform: gpio
+    pin:
+      number: GPIO39
+      inverted: true
+    name: ${upper_devicename} Button
 
 light:
-  - platform: neopixelbus
-    #internal: true
-    name: "FastLED SPI Light"
-    id: ledstrip_bureau
-    type: RGB
-    variant: P9813
+  - platform: fastled_clockless
+    chipset: WS2812B
+    pin: GPIO27
+    num_leds: 25
+    rgb_order: GRB
+    name: ${upper_devicename} Led Matrix
+    id: matrix
+    color_correct: [40%, 40%, 40%]
+    effects:
+      - addressable_rainbow:
+      - addressable_color_wipe:
+      - addressable_scan:
+      - addressable_twinkle:
+      - addressable_random_twinkle:
+      - addressable_fireworks:
+
+  - platform: fastled_spi
+    id: ledstrip_p9813
+    name: ledstrip
+    chipset: P9813
+    data_pin: GPIO25
+    clock_pin: GPIO21
+    data_rate: 500kHz
     num_leds: 2
-    data_pin: D7  # GPIO13 preferred for neopixelbus on ESP8266
-    clock_pin: D5  # GPIO14 required for neopixelbus on ESP8266
-    # method:
-    #   type: spi
-    #   speed: 0.500MHz
-    # gamma_correct: 1.8
-   # color_correct: [100%, 68%, 46%]
+    rgb_order: RGB
   #   effects:
   #     - <<: !include common/light_effect_alarme.yaml
   #     - pulse:
@@ -95,16 +98,16 @@ light:
   #           it[1] = ESPHSVColor(random_uint32() % 30, 255, 135 + random_uint32() % 120).to_rgb();
   #           it[2] = ESPHSVColor(42, 255, 135 + random_uint32() % 120).to_rgb();
 
-  # - platform: partition
-  #   name: "porte bas"
-  #   segments:
-  #     - id: ledstrip_bureau
-  #       from: 0
-  #       to: 0
+  - platform: partition
+    name: "porte bas"
+    segments:
+      - id: ledstrip_p9813
+        from: 0
+        to: 0
 
-  # - platform: partition
-  #   name: "porte haut"
-  #   segments:
-  #     - id: ledstrip_bureau
-  #       from: 1
-  #       to: 1
+  - platform: partition
+    name: "porte haut"
+    segments:
+      - id: ledstrip_p9813
+        from: 1
+        to: 1
